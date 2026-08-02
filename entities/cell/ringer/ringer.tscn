@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://crlxvxqo1cc5e"]
+
+[ext_resource type="Script" uid="uid://c3x3k1hthwln7" path="res://entities/cell/ringer/ringer.gd" id="1_ringer"]
+[ext_resource type="Texture2D" uid="uid://m7p83w03vxlw" path="res://assets/temporary_assets/frog_walking_1.PNG" id="2_frog"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ring01"]
+radius = 79.00633
+
+[node name="Ringer" type="CharacterBody2D" unique_id=1527587051]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_ringer")
+ring_radius = 2000.0
+max_speed = 120.0
+max_force = 500.0
+view_radius = 2000.0
+wander_weight = 0.3
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1321946317]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_frog")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1292954541]
+position = Vector2(8, 10)
+shape = SubResource("CircleShape2D_ring01")
