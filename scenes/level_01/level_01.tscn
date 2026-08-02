@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bvu3eufi08mft"]
+
+[ext_resource type="Script" uid="uid://bljldeqnbu6rl" path="res://scenes/level_01/level_01.gd" id="1_0y5gt"]
+[ext_resource type="PackedScene" uid="uid://lmsuwdasp2pu" path="res://entities/flock/flock.tscn" id="2_n2h5k"]
+[ext_resource type="Texture2D" uid="uid://5352y1wr46g0" path="res://assets/temporary_assets/armadillo_ability_1.PNG" id="3_a03qe"]
+[ext_resource type="Texture2D" uid="uid://74hys64mqckk" path="res://assets/temporary_assets/fira_walking_2.PNG" id="4_i3sbr"]
+[ext_resource type="Texture2D" uid="uid://m7p83w03vxlw" path="res://assets/temporary_assets/frog_walking_1.PNG" id="5_5nkp2"]
+
+[node name="Level01" type="Node2D" unique_id=592872825]
+script = ExtResource("1_0y5gt")
+flock_scene = ExtResource("2_n2h5k")
+flock_textures = Array[Texture2D]([ExtResource("3_a03qe"), ExtResource("4_i3sbr"), ExtResource("5_5nkp2")])
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=371371534]
+zoom = Vector2(0.2, 0.2)
