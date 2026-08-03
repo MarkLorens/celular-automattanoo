@@ -132,10 +132,40 @@ static func is_edible(cell) -> bool:
 		and candidate.is_in_group(FLOATER_GROUP) \
 		and not candidate.is_in_group(PREDATOR_GROUP)
 
-## Called by a nutrient as it is eaten. A species that makes something of a meal
+## Called by a nutrient as it is eaten. Return false to refuse it, leaving the
+## food in the dish for somebody else. A species that makes something of a meal
 ## overrides this; for everyone else food is just food and nothing comes of it.
-func on_nutrient_eaten() -> void:
-	pass
+func on_nutrient_eaten() -> bool:
+	return true
+
+## Whether a predator that tries to eat this cell dies for the attempt. Species
+## that can put up a defence override it; nothing is defended by default.
+##
+## Deliberately not part of is_edible(): a defended cell is still perfectly
+## valid prey to hunt and lunge at. The defence only resolves on contact, which
+## is what lets a predator kill itself on one.
+func is_defended() -> bool:
+	return false
+
+## One predator's attempt on one cell. Normally the prey dies. Against a
+## defended cell the attempt kills the predator instead. Returns true if the
+## meal actually happened, so a predator can tell whether it is still alive.
+##
+## Both outcomes live here so the rule cannot drift between the chaser's lunge
+## and the mouser's drift-through. Callers are expected to have cleared the prey
+## through is_edible() first.
+func try_eat(prey: Cell) -> bool:
+	if prey.is_defended():
+		_on_defended_prey(prey)
+		return false
+	prey.queue_free()
+	return true
+
+## What a defended cell does to the predator that reached it. Dying on the spot
+## is the default -- a species that survives the encounter overrides this and
+## says what happens instead.
+func _on_defended_prey(_prey: Cell) -> void:
+	queue_free()
 
 ## What makes this species this species. Overridden by every subclass.
 func _steering(_delta: float) -> Vector2:

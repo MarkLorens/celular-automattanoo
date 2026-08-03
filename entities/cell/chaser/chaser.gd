@@ -83,7 +83,10 @@ func _update_hunt(delta: float) -> void:
 
 	if is_hunting():
 		if global_position.distance_to(prey.global_position) <= catch_radius:
-			prey.queue_free()
+			# May kill this chaser instead, if the prey is defended. Nothing up
+			# to this point knows or cares -- the hunt is identical either way,
+			# which is what makes running onto a poisonous ringer possible.
+			try_eat(prey)
 			_end_hunt()  # Eating costs the same breather as giving up does.
 			return
 		# Deliberately not re-reading the sensor here: the chaser commits for
