@@ -12,16 +12,24 @@ extends Node2D
 
 # Index-aligned with colonies: each species grows on its own clock.
 var _time_until_spawn: Array[float] = []
+# Index-aligned too: what each colony has alive, so a capped one can tell
+# whether it has room. Entries go stale as cells are eaten and get pruned on
+# read, which is cheaper than wiring a signal to every cell just to count them.
+var _alive: Array[Array] = []
 
 func _ready() -> void:
 	_resolve_scene_refs()
 	_fit_camera_to_dish()
-	for colony in colonies:
+	for i in colonies.size():
+		var colony: CellColony = colonies[i]
 		_time_until_spawn.append(colony.spawn_interval if colony != null else 0.0)
+		_alive.append([])
 		if colony == null:
 			continue
-		for i in colony.count:
-			_spawn_cell(colony)
+		for n in colony.count:
+			if _at_cap(i):
+				break  # count overshooting max_population is the cap's problem.
+			_spawn_cell(i)
 
 ## The exported node references do not survive the scene file. GDScript leaves
 ## PROPERTY_USAGE_NODE_PATH_FROM_SCENE_ROOT off these properties, so the stored
@@ -75,20 +83,44 @@ func _process(delta: float) -> void:
 		var colony: CellColony = colonies[i]
 		if colony == null or colony.spawn_interval <= 0.0:
 			continue
+		# A colony sitting at its cap parks its timer at full rather than burning
+		# it down against a spawn that cannot happen. A kill is then followed by
+		# a whole interval of absence, instead of by whatever happened to be
+		# left on a clock that ran while the slot was occupied.
+		if _at_cap(i):
+			_time_until_spawn[i] = colony.spawn_interval
+			continue
 		_time_until_spawn[i] -= delta
 		if _time_until_spawn[i] <= 0.0:
 			_time_until_spawn[i] = colony.spawn_interval
-			_spawn_cell(colony)
+			_spawn_cell(i)
 
-func _spawn_cell(colony: CellColony) -> void:
+## Whether this colony already has as many alive as it is allowed. A
+## max_population of 0 means no ceiling, which is every colony bar the ones that
+## have specifically asked for one.
+func _at_cap(index: int) -> bool:
+	var cap: int = colonies[index].max_population
+	return cap > 0 and _living(index) >= cap
+
+## Living members of this colony, dropping any eaten since the last check.
+## queue_free() only takes effect at the end of the frame, so a cell claimed
+## this frame still has to count as gone or it blocks its own replacement.
+func _living(index: int) -> int:
+	var living: Array = _alive[index]
+	for i in range(living.size() - 1, -1, -1):
+		# Untyped: a freed instance cannot be assigned to a Cell-typed variable.
+		var cell = living[i]
+		if not is_instance_valid(cell) or cell.is_queued_for_deletion():
+			living.remove_at(i)
+	return living.size()
+
+func _spawn_cell(index: int) -> void:
+	var colony: CellColony = colonies[index]
 	if colony.scene == null:
 		return
 
 	var cell: Cell = colony.scene.instantiate()
-	cell.position = colony.spawn_center + Vector2(
-		randf_range(-colony.spawn_radius, colony.spawn_radius),
-		randf_range(-colony.spawn_radius, colony.spawn_radius)
-	)
+	cell.position = _spawn_position(colony)
 	# Spawning somewhere is not the same as belonging there: by default a cell is
 	# free to cross the whole dish, and only stays put if the colony asks for it.
 	if colony.roam_radius <= 0.0 and dish != null:
@@ -104,6 +136,22 @@ func _spawn_cell(colony: CellColony) -> void:
 		sprite.texture = colony.textures.pick_random()
 
 	add_child(cell)
+	_alive[index].append(cell)
+
+## Where one cell of this colony starts. Anywhere in the dish unless the colony
+## specifically asks to be dropped in a patch, and clamped either way so nothing
+## can be placed out through the glass.
+func _spawn_position(colony: CellColony) -> Vector2:
+	if colony.spawn_anywhere and dish != null:
+		return dish.global_position + _random_in_disc(dish.leash_radius())
+	return _clamped_to_dish(colony.spawn_center + _random_in_disc(colony.spawn_radius))
+
+## Uniformly distributed point inside a circle of this radius. The square root is
+## what makes it even by area -- sampling the radius directly bunches cells up
+## around the centre, and a plain x/y box (which this replaces) scatters them
+## into corners the round dish does not have.
+func _random_in_disc(radius: float) -> Vector2:
+	return Vector2.RIGHT.rotated(randf() * TAU) * sqrt(randf()) * radius
 
 ## A colony that wants its own patch gets one, shrunk so the patch still fits
 ## inside the glass from wherever it happens to be centred.

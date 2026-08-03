@@ -8,11 +8,22 @@ extends Resource
 ## How many to place at level start.
 @export var count: int = 20
 ## Seconds between drip-fed extra cells. 0 for a fixed population.
-@export var spawn_interval: float = 30.0
+@export var spawn_interval: float = 0.0
+## Ceiling on how many of this colony may be alive at once. 0 for no ceiling.
+## The drip feed keeps running underneath it, so a species capped at one is a
+## single specimen that comes back an interval after something kills it, rather
+## than a one-off that is gone for good.
+@export var max_population: int = 0
 ## Picked at random per cell. Leave empty to keep whatever the scene ships with.
 @export var textures: Array[Texture2D] = []
 
 @export_group("Placement")
+## Scatter this colony across the whole dish rather than the patch below. On by
+## default: a colony is a species, not a territory, so prey and predator alike
+## start life anywhere in the glass.
+@export var spawn_anywhere: bool = true
+## Where the colony starts when spawn_anywhere is off. Also the centre of its
+## territory whenever roam_radius asks for one.
 @export var spawn_center: Vector2 = Vector2.ZERO
 @export var spawn_radius: float = 700.0
 ## Optional territory: confine this colony to its own patch of this radius
