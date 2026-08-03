@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://danprjrpnqplt"]
+
+[ext_resource type="Texture2D" uid="uid://ctmkqwlo8i0qy" path="res://assets/temporary_assets/Player_Wheelchair_Resized.png" id="1_nmder"]
+[ext_resource type="Script" uid="uid://b6wcgq6w60wi4" path="res://entities/cell/mouser/mouser.gd" id="1_ptgcb"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
+radius = 59.07622
+
+[node name="Mouser" type="CharacterBody2D" unique_id=982042900]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_ptgcb")
+min_speed = 20.0
+max_speed = 40.0
+max_force = 100.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1678004103]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("1_nmder")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1006823412]
+shape = SubResource("CircleShape2D_fey80")

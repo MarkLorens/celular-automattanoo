@@ -110,6 +110,28 @@ func _physics_process(delta: float) -> void:
 
 	_spin_sprite(delta)
 
+## The one test for "may a predator eat this", shared by every predator so the
+## rule cannot drift apart between them. Predators are excluded explicitly
+## rather than by merely not being floaters: two predators drifting through each
+## other must never end in a meal, however either one was tagged.
+##
+## is_queued_for_deletion() is the load-bearing part. queue_free() does not take
+## the node away until the end of the frame, so is_instance_valid() still
+## answers true for prey another predator already claimed this same frame.
+## The argument is deliberately untyped. A predator can still be holding a
+## reference to prey a *different* predator ate on an earlier frame, and passing
+## an already-freed object to a `Cell`-typed parameter raises a type error
+## instead of quietly answering false -- which is the one answer this has to be
+## able to give.
+static func is_edible(cell) -> bool:
+	if not is_instance_valid(cell):
+		return false
+	var candidate := cell as Cell
+	return candidate != null \
+		and not candidate.is_queued_for_deletion() \
+		and candidate.is_in_group(FLOATER_GROUP) \
+		and not candidate.is_in_group(PREDATOR_GROUP)
+
 ## What makes this species this species. Overridden by every subclass.
 func _steering(_delta: float) -> Vector2:
 	return Vector2.ZERO

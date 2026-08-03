@@ -78,7 +78,7 @@ func _steering(delta: float) -> Vector2:
 ## Drift -> lock on -> burst -> rest -> drift. Exactly one of the three phases
 ## is live on any given frame.
 func _update_hunt(delta: float) -> void:
-	if prey != null and not _is_edible(prey):
+	if prey != null and not is_edible(prey):
 		_end_hunt()  # Freed, or already claimed by another chaser, mid-chase.
 
 	if is_hunting():
@@ -109,21 +109,6 @@ func _end_hunt() -> void:
 	_hunt_remaining = 0.0
 	_cooldown_remaining = hunt_cooldown
 
-## The single test for "may I eat this", used for picking a target, for keeping
-## one, and for the kill itself -- so a predator can never end up on the menu by
-## one path that another path would have refused.
-##
-## Two chasers converging on the same floater is the case worth spelling out:
-## queue_free() does not take the node away until the end of the frame, so
-## is_instance_valid() still answers true for prey the other chaser has already
-## claimed. is_queued_for_deletion() is what stops the second chaser eating a
-## corpse and burning its burst on it.
-func _is_edible(cell: Cell) -> bool:
-	return is_instance_valid(cell) \
-		and not cell.is_queued_for_deletion() \
-		and cell.is_in_group(FLOATER_GROUP) \
-		and not cell.is_in_group(PREDATOR_GROUP)
-
 ## Nearest cell in the sensor that counts as food, or null if there is none.
 ## Picking the nearest means a chaser in the middle of a shoal lunges at
 ## whoever is closest at lock-on, then sticks with them for the whole burst.
@@ -132,7 +117,7 @@ func _nearest_floater() -> Cell:
 	var nearest_distance: float = INF
 	for body in sensor.get_overlapping_bodies():
 		var candidate := body as Cell
-		if candidate == null or not _is_edible(candidate):
+		if candidate == null or not is_edible(candidate):
 			continue
 		var distance: float = global_position.distance_squared_to(candidate.global_position)
 		if distance < nearest_distance:
