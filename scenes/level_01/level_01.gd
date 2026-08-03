@@ -9,6 +9,12 @@ extends Node2D
 @export var camera: Camera2D
 ## Dropped at the cursor on the "spawn_nutrient" action.
 @export var nutrient_scene: PackedScene
+## Seconds the player waits between drops. Doubles as the real cap on how fast
+## flockers can breed, since a nutrient is what buys a new one.
+@export var nutrient_cooldown: float = 10.0
+
+# Counts down to 0, at which point another nutrient may be dropped.
+var _nutrient_ready_in: float = 0.0
 
 # Index-aligned with colonies: each species grows on its own clock.
 var _time_until_spawn: Array[float] = []
@@ -52,7 +58,10 @@ func _resolve_scene_refs() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("spawn_nutrient"):
 		return
+	if _nutrient_ready_in > 0.0:
+		return  # Still cooling down. The press is refused, not queued.
 	_spawn_nutrient(get_global_mouse_position())
+	_nutrient_ready_in = nutrient_cooldown
 	get_viewport().set_input_as_handled()
 
 func _spawn_nutrient(at: Vector2) -> void:
@@ -79,6 +88,8 @@ func _clamped_to_dish(point: Vector2) -> Vector2:
 	return centre + offset.normalized() * limit
 
 func _process(delta: float) -> void:
+	_nutrient_ready_in = maxf(_nutrient_ready_in - delta, 0.0)
+
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
 		if colony == null or colony.spawn_interval <= 0.0:

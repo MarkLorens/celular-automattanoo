@@ -132,6 +132,11 @@ static func is_edible(cell) -> bool:
 		and candidate.is_in_group(FLOATER_GROUP) \
 		and not candidate.is_in_group(PREDATOR_GROUP)
 
+## Called by a nutrient as it is eaten. A species that makes something of a meal
+## overrides this; for everyone else food is just food and nothing comes of it.
+func on_nutrient_eaten() -> void:
+	pass
+
 ## What makes this species this species. Overridden by every subclass.
 func _steering(_delta: float) -> Vector2:
 	return Vector2.ZERO
