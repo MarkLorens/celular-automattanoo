@@ -1,15 +1,20 @@
-extends Node
+# Node2D rather than Node: the level is one, and dropping nutrients needs the
+# canvas transform that get_global_mouse_position() reads.
+extends Node2D
 
 @export var colonies: Array[CellColony] = []
 ## The world boundary. Every colony's leash is derived from it.
 @export var dish: PetriDish
 ## Panning gets clamped to the dish, so you can never scroll off into the void.
 @export var camera: Camera2D
+## Dropped at the cursor on the "spawn_nutrient" action.
+@export var nutrient_scene: PackedScene
 
 # Index-aligned with colonies: each species grows on its own clock.
 var _time_until_spawn: Array[float] = []
 
 func _ready() -> void:
+	_resolve_scene_refs()
 	_fit_camera_to_dish()
 	for colony in colonies:
 		_time_until_spawn.append(colony.spawn_interval if colony != null else 0.0)
@@ -17,6 +22,53 @@ func _ready() -> void:
 			continue
 		for i in colony.count:
 			_spawn_cell(colony)
+
+## The exported node references do not survive the scene file. GDScript leaves
+## PROPERTY_USAGE_NODE_PATH_FROM_SCENE_ROOT off these properties, so the stored
+## NodePath("PetriDish") is never turned into a node and `dish` simply loads
+## null -- which silently disabled the camera fit, every colony's leash and the
+## nutrient clamp, since all three check for null and give up quietly.
+##
+## Falling back to the conventional child names is what actually holds this
+## together. An export that does arrive populated still wins.
+func _resolve_scene_refs() -> void:
+	if dish == null:
+		dish = get_node_or_null(^"PetriDish") as PetriDish
+	if camera == null:
+		camera = get_node_or_null(^"Camera2D") as Camera2D
+
+## _unhandled_input rather than _input, so anything the game grows later -- a
+## menu, a HUD button -- gets first refusal on the key. is_action_pressed()
+## ignores echoes by default, so holding the key drops one nutrient, not a
+## stream of them.
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("spawn_nutrient"):
+		return
+	_spawn_nutrient(get_global_mouse_position())
+	get_viewport().set_input_as_handled()
+
+func _spawn_nutrient(at: Vector2) -> void:
+	if nutrient_scene == null:
+		push_warning("Level has no nutrient_scene assigned; nothing to drop.")
+		return
+	var nutrient: Node2D = nutrient_scene.instantiate()
+	add_child(nutrient)
+	# Positioned after parenting so the drop lands under the cursor whatever
+	# transform the level itself happens to carry.
+	nutrient.global_position = _clamped_to_dish(at)
+
+## Nearest point inside the dish. Clamped to the leash radius rather than the
+## glass itself, so food can never land in the margin the cells are turned back
+## from and sit there unreachable.
+func _clamped_to_dish(point: Vector2) -> Vector2:
+	if dish == null:
+		return point
+	var centre: Vector2 = dish.global_position
+	var offset: Vector2 = point - centre
+	var limit: float = dish.leash_radius()
+	if offset.length() <= limit:
+		return point
+	return centre + offset.normalized() * limit
 
 func _process(delta: float) -> void:
 	for i in colonies.size():

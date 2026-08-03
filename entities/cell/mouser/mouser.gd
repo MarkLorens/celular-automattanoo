@@ -37,9 +37,12 @@ func _physics_process(delta: float) -> void:
 	if time_until_change <= 0.0:
 		_pick_new_wander()
 
-	# Steer toward the mouse, plus a per-member wander offset so they don't all stack
+	# Steer toward the mouse, plus a per-member wander offset so they don't all stack.
+	# Clamping the target rather than the mouser is what keeps this smooth: with the
+	# cursor outside the glass it tracks the nearest point on the rim and slides
+	# along it, instead of pressing outward against a wall.
 	var mouse_pos: Vector2 = get_global_mouse_position()
-	var to_target: Vector2 = (mouse_pos + wander_offset) - global_position
+	var to_target: Vector2 = _clamped_to_roam(mouse_pos + wander_offset) - global_position
 	var distance: float = to_target.length()
 
 	var desired_speed: float = max_speed
@@ -50,11 +53,28 @@ func _physics_process(delta: float) -> void:
 	var target_velocity: Vector2 = to_target.normalized() * desired_speed
 	velocity = velocity.lerp(target_velocity, smoothing * delta)
 	move_and_slide()
+	# Backstop. Clamping the target keeps it honest almost all the time, but a
+	# fast flick of the cursor can still carry the mouser a little past the rim
+	# on momentum, and it has no collider to stop it -- it passes through
+	# everything, the glass included.
+	global_position = _clamped_to_roam(global_position)
 	_consume_overlapped()
 
 	# Rotation stays independent — random tumble, unaffected by heading
 	current_angular_speed = lerp(current_angular_speed, target_angular_speed, smoothing * delta)
 	sprite.rotation += current_angular_speed * delta
+
+## Nearest point inside the roaming circle the level handed us on spawn -- the
+## same leash every other species is held to, so the mouser cannot chase the
+## cursor out through the glass. A roam_radius of 0 means no leash, matching how
+## Cell._containment_steering() reads it, and passes the point back untouched.
+func _clamped_to_roam(point: Vector2) -> Vector2:
+	if roam_radius <= 0.0:
+		return point
+	var offset: Vector2 = point - roam_center
+	if offset.length() <= roam_radius:
+		return point
+	return roam_center + offset.normalized() * roam_radius
 
 ## Eat everything currently inside us. There is no sensor and no physics contact
 ## to work from -- the mouser passes clean through the dish -- so this walks the

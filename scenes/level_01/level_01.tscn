@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://cgajsibqedijg" path="res://helper_scripts/camera.gd" id="8_n2h5k"]
 [ext_resource type="PackedScene" uid="uid://dga5bwfx8x0" path="res://entities/cell/chaser/chaser.tscn" id="8_xttg2"]
 [ext_resource type="PackedScene" uid="uid://cuexd1ww4bsar" path="res://entities/dish/petri_dish.tscn" id="9_dish"]
+[ext_resource type="PackedScene" uid="uid://depdw7v8tqpoj" path="res://entities/nutrient/nutrient.tscn" id="10_nutri"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -49,6 +50,7 @@ script = ExtResource("1_0y5gt")
 colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_5nkp2"), SubResource("Resource_7asd0"), SubResource("Resource_dfdfd")])
 dish = NodePath("PetriDish")
 camera = NodePath("Camera2D")
+nutrient_scene = ExtResource("10_nutri")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
 radius = 2500.0
