@@ -7,7 +7,7 @@ z_index = -10
 script = ExtResource("1_dish")
 
 [node name="Wall" type="StaticBody2D" parent="." unique_id=399178494]
-collision_layer = 3
+collision_layer = 7
 collision_mask = 0
 
 [node name="Shape" type="CollisionPolygon2D" parent="Wall" unique_id=414553370]

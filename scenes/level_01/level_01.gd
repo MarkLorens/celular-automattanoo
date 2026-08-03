@@ -37,8 +37,14 @@ func _spawn_cell(colony: CellColony) -> void:
 		randf_range(-colony.spawn_radius, colony.spawn_radius),
 		randf_range(-colony.spawn_radius, colony.spawn_radius)
 	)
-	cell.roam_center = colony.spawn_center
-	cell.roam_radius = _leash_for(colony)
+	# Spawning somewhere is not the same as belonging there: by default a cell is
+	# free to cross the whole dish, and only stays put if the colony asks for it.
+	if colony.roam_radius <= 0.0 and dish != null:
+		cell.roam_center = dish.global_position
+		cell.roam_radius = dish.leash_radius()
+	else:
+		cell.roam_center = colony.spawn_center
+		cell.roam_radius = _leash_for(colony)
 
 	if not colony.textures.is_empty():
 		# @onready has not run yet, so reach for the node directly.
@@ -47,9 +53,8 @@ func _spawn_cell(colony: CellColony) -> void:
 
 	add_child(cell)
 
-## A colony's leash has to fit inside the glass wherever the colony is centred,
-## otherwise its cells would sit pressed against the wall. roam_radius of 0
-## means "take whatever room the dish allows".
+## A colony that wants its own patch gets one, shrunk so the patch still fits
+## inside the glass from wherever it happens to be centred.
 func _leash_for(colony: CellColony) -> float:
 	if dish == null:
 		return colony.roam_radius
@@ -59,9 +64,6 @@ func _leash_for(colony: CellColony) -> float:
 	if room <= 0.0:
 		push_warning("Colony centred at %s sits outside the dish." % colony.spawn_center)
 		return 0.0
-
-	if colony.roam_radius <= 0.0:
-		return room
 	return minf(colony.roam_radius, room)
 
 func _fit_camera_to_dish() -> void:

@@ -6,9 +6,14 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
 radius = 79.00633
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_6kwvf"]
+radius = 421.30392
+
 [node name="Flocker" type="CharacterBody2D" unique_id=1756454865]
 script = ExtResource("1_flocker")
+min_speed = 80.0
 max_speed = 80.0
+max_force = 400.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=36750086]
 scale = Vector2(0.3, 0.3)
@@ -17,3 +22,11 @@ texture = ExtResource("2_hw4oq")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=297928868]
 position = Vector2(8, 10)
 shape = SubResource("CircleShape2D_fey80")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=210491446]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1669422396]
+shape = SubResource("CircleShape2D_6kwvf")
+debug_color = Color(0.99390656, 0, 0.23750138, 0.41960785)

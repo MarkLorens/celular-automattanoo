@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://dga5bwfx8x0"]
+
+[ext_resource type="Script" uid="uid://ykx3wqfx2epc" path="res://entities/cell/chaser/chaser.gd" id="1_gshbv"]
+[ext_resource type="Texture2D" uid="uid://0tbt6las8jst" path="res://assets/temporary_assets/rhino_walking_1.PNG" id="1_h4drc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rmndm"]
+radius = 86.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
+radius = 911.01373
+
+[node name="Chaser" type="CharacterBody2D" unique_id=497331980]
+collision_layer = 4
+collision_mask = 4
+script = ExtResource("1_gshbv")
+chase_multiplier = 6.0
+hunt_cooldown = 6.0
+min_speed = 20.0
+max_speed = 40.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1401065615]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("1_h4drc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1406061963]
+shape = SubResource("CircleShape2D_rmndm")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=341959454]
+collision_layer = 0
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=102727381]
+shape = SubResource("CircleShape2D_fey80")
+debug_color = Color(0.8467286, 0, 0.1221027, 0.41960785)

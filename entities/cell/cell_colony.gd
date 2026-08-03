@@ -15,6 +15,7 @@ extends Resource
 @export_group("Placement")
 @export var spawn_center: Vector2 = Vector2.ZERO
 @export var spawn_radius: float = 700.0
-## Leash radius handed to every cell, measured from spawn_center. 0 keeps the
-## scene's own value.
+## Optional territory: confine this colony to its own patch of this radius
+## around spawn_center. 0 lets its cells roam the entire dish, which is usually
+## what you want -- spawning somewhere should not mean living there.
 @export var roam_radius: float = 0.0

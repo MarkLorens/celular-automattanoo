@@ -20,6 +20,11 @@ extends Cell
 ## Tangential push. 0 leaves a static shell of parked cells; higher spins faster.
 @export var orbit_weight: float = 1.0
 
+func _ready() -> void:
+	super()  # GDScript does not chain _ready(); without this Cell's never runs.
+	add_to_group("ringer")
+	add_to_group(FLOATER_GROUP)
+
 func _steering(_delta: float) -> Vector2:
 	if neighbour_count == 0:
 		return Vector2.ZERO

@@ -43,10 +43,24 @@ extends CharacterBody2D
 
 @onready var sprite: Sprite2D = $Sprite2D
 
+## Anything that merely drifts, i.e. everything a predator treats as food.
+## Prey species opt in from their own _ready(); predators do not.
+const FLOATER_GROUP := &"floater"
+
+## Anything that hunts. Predator species opt in from their own _ready(). Prey
+## that bothers to look for danger keys off this rather than a species name, so
+## a second predator spooks everything the first one does.
+const PREDATOR_GROUP := &"predator"
+
 ## Live cells bucketed by species, keyed on the species script itself. Species
 ## never perceive each other, so a cell only ever walks its own bucket -- and
 ## the script being the key means a species cannot be mis-tagged.
 static var colonies: Dictionary = {}
+
+## How spooked this cell is, 0 to 1. Cell never acts on it and never sets it --
+## it lives here so the one neighbour pass can carry fear between colony-mates,
+## and so a species that does not care about predators just leaves it at zero.
+var alarm: float = 0.0
 
 # Refilled by _gather_neighbours() each frame, read by _steering().
 var neighbour_count: int = 0
@@ -54,6 +68,9 @@ var crowding: int = 0
 var colony_centre: Vector2 = Vector2.ZERO
 var colony_heading: Vector2 = Vector2.ZERO
 var separation_push: Vector2 = Vector2.ZERO
+## Loudest alarm among the colony-mates in view. This is the whole of the panic
+## channel: a species that reads it inherits its neighbours' fear.
+var neighbour_alarm: float = 0.0
 
 var _colony: Array = []
 var wander_angle: float = 0.0
@@ -104,6 +121,7 @@ func _gather_neighbours() -> void:
 	colony_centre = Vector2.ZERO
 	colony_heading = Vector2.ZERO
 	separation_push = Vector2.ZERO
+	neighbour_alarm = 0.0
 
 	var view_sq: float = view_radius * view_radius
 	var separation_sq: float = separation_radius * separation_radius
@@ -119,6 +137,10 @@ func _gather_neighbours() -> void:
 		neighbour_count += 1
 		colony_heading += other.velocity
 		colony_centre += other.global_position
+		# Fear travels one cell per frame. Whether a neighbour has already
+		# updated this frame depends on tree order, which at 60Hz is far below
+		# what the rise rate on the reading end makes visible.
+		neighbour_alarm = maxf(neighbour_alarm, other.alarm)
 
 		if distance_sq < separation_sq:
 			# Inverse distance falloff: the closer the neighbour, the harder the shove.
