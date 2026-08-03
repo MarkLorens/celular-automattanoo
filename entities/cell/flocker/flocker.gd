@@ -45,6 +45,11 @@ extends Cell
 ## back into the predator's path -- which is where the flock centre tends to be.
 @export var panic_formation_scale: float = 0.1
 
+@export_group("Reproduction")
+## How far from the parent a new flocker appears. Small, so it reads as budding
+## off rather than materialising elsewhere; separation does the pushing apart.
+@export var offspring_offset: float = 60.0
+
 @onready var threat_sensor: Area2D = $Area2D
 
 # Refilled by _sense_threats() each frame, the same way Cell fills the
@@ -61,6 +66,19 @@ func _ready() -> void:
 	add_to_group("flocker")
 	add_to_group(FLOATER_GROUP)
 	_threat_radius = _sensor_radius()
+
+## Eating is how flockers multiply -- the one species that turns food into more
+## of itself. The newborn is a duplicate rather than a fresh scene instance so it
+## inherits the parent's leash, tuning and sprite instead of reverting to the
+## scene defaults, which would leash it to the wrong patch entirely.
+func on_nutrient_eaten() -> void:
+	var child := duplicate() as Flocker
+	if child == null:
+		return
+	child.position = position + Vector2.RIGHT.rotated(randf() * TAU) * offspring_offset
+	# The tree cannot be touched while the physics server is flushing queries,
+	# and that is exactly when a nutrient reports being eaten.
+	get_parent().add_child.call_deferred(child)
 
 func _steering(delta: float) -> Vector2:
 	_sense_threats()
