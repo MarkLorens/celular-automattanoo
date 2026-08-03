@@ -1,44 +1,134 @@
-extends Node
+# Node2D rather than Node: the level is one, and dropping nutrients needs the
+# canvas transform that get_global_mouse_position() reads.
+extends Node2D
 
 @export var colonies: Array[CellColony] = []
 ## The world boundary. Every colony's leash is derived from it.
 @export var dish: PetriDish
 ## Panning gets clamped to the dish, so you can never scroll off into the void.
 @export var camera: Camera2D
+## Dropped at the cursor on the "spawn_nutrient" action.
+@export var nutrient_scene: PackedScene
 
 # Index-aligned with colonies: each species grows on its own clock.
 var _time_until_spawn: Array[float] = []
+# Index-aligned too: what each colony has alive, so a capped one can tell
+# whether it has room. Entries go stale as cells are eaten and get pruned on
+# read, which is cheaper than wiring a signal to every cell just to count them.
+var _alive: Array[Array] = []
 
 func _ready() -> void:
+	_resolve_scene_refs()
 	_fit_camera_to_dish()
-	for colony in colonies:
+	for i in colonies.size():
+		var colony: CellColony = colonies[i]
 		_time_until_spawn.append(colony.spawn_interval if colony != null else 0.0)
+		_alive.append([])
 		if colony == null:
 			continue
-		for i in colony.count:
-			_spawn_cell(colony)
+		for n in colony.count:
+			if _at_cap(i):
+				break  # count overshooting max_population is the cap's problem.
+			_spawn_cell(i)
+
+## The exported node references do not survive the scene file. GDScript leaves
+## PROPERTY_USAGE_NODE_PATH_FROM_SCENE_ROOT off these properties, so the stored
+## NodePath("PetriDish") is never turned into a node and `dish` simply loads
+## null -- which silently disabled the camera fit, every colony's leash and the
+## nutrient clamp, since all three check for null and give up quietly.
+##
+## Falling back to the conventional child names is what actually holds this
+## together. An export that does arrive populated still wins.
+func _resolve_scene_refs() -> void:
+	if dish == null:
+		dish = get_node_or_null(^"PetriDish") as PetriDish
+	if camera == null:
+		camera = get_node_or_null(^"Camera2D") as Camera2D
+
+## _unhandled_input rather than _input, so anything the game grows later -- a
+## menu, a HUD button -- gets first refusal on the key. is_action_pressed()
+## ignores echoes by default, so holding the key drops one nutrient, not a
+## stream of them.
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("spawn_nutrient"):
+		return
+	_spawn_nutrient(get_global_mouse_position())
+	get_viewport().set_input_as_handled()
+
+func _spawn_nutrient(at: Vector2) -> void:
+	if nutrient_scene == null:
+		push_warning("Level has no nutrient_scene assigned; nothing to drop.")
+		return
+	var nutrient: Node2D = nutrient_scene.instantiate()
+	add_child(nutrient)
+	# Positioned after parenting so the drop lands under the cursor whatever
+	# transform the level itself happens to carry.
+	nutrient.global_position = _clamped_to_dish(at)
+
+## Nearest point inside the dish. Clamped to the leash radius rather than the
+## glass itself, so food can never land in the margin the cells are turned back
+## from and sit there unreachable.
+func _clamped_to_dish(point: Vector2) -> Vector2:
+	if dish == null:
+		return point
+	var centre: Vector2 = dish.global_position
+	var offset: Vector2 = point - centre
+	var limit: float = dish.leash_radius()
+	if offset.length() <= limit:
+		return point
+	return centre + offset.normalized() * limit
 
 func _process(delta: float) -> void:
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
 		if colony == null or colony.spawn_interval <= 0.0:
 			continue
+		# A colony sitting at its cap parks its timer at full rather than burning
+		# it down against a spawn that cannot happen. A kill is then followed by
+		# a whole interval of absence, instead of by whatever happened to be
+		# left on a clock that ran while the slot was occupied.
+		if _at_cap(i):
+			_time_until_spawn[i] = colony.spawn_interval
+			continue
 		_time_until_spawn[i] -= delta
 		if _time_until_spawn[i] <= 0.0:
 			_time_until_spawn[i] = colony.spawn_interval
-			_spawn_cell(colony)
+			_spawn_cell(i)
 
-func _spawn_cell(colony: CellColony) -> void:
+## Whether this colony already has as many alive as it is allowed. A
+## max_population of 0 means no ceiling, which is every colony bar the ones that
+## have specifically asked for one.
+func _at_cap(index: int) -> bool:
+	var cap: int = colonies[index].max_population
+	return cap > 0 and _living(index) >= cap
+
+## Living members of this colony, dropping any eaten since the last check.
+## queue_free() only takes effect at the end of the frame, so a cell claimed
+## this frame still has to count as gone or it blocks its own replacement.
+func _living(index: int) -> int:
+	var living: Array = _alive[index]
+	for i in range(living.size() - 1, -1, -1):
+		# Untyped: a freed instance cannot be assigned to a Cell-typed variable.
+		var cell = living[i]
+		if not is_instance_valid(cell) or cell.is_queued_for_deletion():
+			living.remove_at(i)
+	return living.size()
+
+func _spawn_cell(index: int) -> void:
+	var colony: CellColony = colonies[index]
 	if colony.scene == null:
 		return
 
 	var cell: Cell = colony.scene.instantiate()
-	cell.position = colony.spawn_center + Vector2(
-		randf_range(-colony.spawn_radius, colony.spawn_radius),
-		randf_range(-colony.spawn_radius, colony.spawn_radius)
-	)
-	cell.roam_center = colony.spawn_center
-	cell.roam_radius = _leash_for(colony)
+	cell.position = _spawn_position(colony)
+	# Spawning somewhere is not the same as belonging there: by default a cell is
+	# free to cross the whole dish, and only stays put if the colony asks for it.
+	if colony.roam_radius <= 0.0 and dish != null:
+		cell.roam_center = dish.global_position
+		cell.roam_radius = dish.leash_radius()
+	else:
+		cell.roam_center = colony.spawn_center
+		cell.roam_radius = _leash_for(colony)
 
 	if not colony.textures.is_empty():
 		# @onready has not run yet, so reach for the node directly.
@@ -46,10 +136,25 @@ func _spawn_cell(colony: CellColony) -> void:
 		sprite.texture = colony.textures.pick_random()
 
 	add_child(cell)
+	_alive[index].append(cell)
 
-## A colony's leash has to fit inside the glass wherever the colony is centred,
-## otherwise its cells would sit pressed against the wall. roam_radius of 0
-## means "take whatever room the dish allows".
+## Where one cell of this colony starts. Anywhere in the dish unless the colony
+## specifically asks to be dropped in a patch, and clamped either way so nothing
+## can be placed out through the glass.
+func _spawn_position(colony: CellColony) -> Vector2:
+	if colony.spawn_anywhere and dish != null:
+		return dish.global_position + _random_in_disc(dish.leash_radius())
+	return _clamped_to_dish(colony.spawn_center + _random_in_disc(colony.spawn_radius))
+
+## Uniformly distributed point inside a circle of this radius. The square root is
+## what makes it even by area -- sampling the radius directly bunches cells up
+## around the centre, and a plain x/y box (which this replaces) scatters them
+## into corners the round dish does not have.
+func _random_in_disc(radius: float) -> Vector2:
+	return Vector2.RIGHT.rotated(randf() * TAU) * sqrt(randf()) * radius
+
+## A colony that wants its own patch gets one, shrunk so the patch still fits
+## inside the glass from wherever it happens to be centred.
 func _leash_for(colony: CellColony) -> float:
 	if dish == null:
 		return colony.roam_radius
@@ -59,9 +164,6 @@ func _leash_for(colony: CellColony) -> float:
 	if room <= 0.0:
 		push_warning("Colony centred at %s sits outside the dish." % colony.spawn_center)
 		return 0.0
-
-	if colony.roam_radius <= 0.0:
-		return room
 	return minf(colony.roam_radius, room)
 
 func _fit_camera_to_dish() -> void:

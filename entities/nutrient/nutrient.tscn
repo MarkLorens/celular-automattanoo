@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://depdw7v8tqpoj"]
+
+[ext_resource type="Script" uid="uid://dhn4l5r1hc7vm" path="res://entities/nutrient/nutrient.gd" id="1_e8x1k"]
+[ext_resource type="Texture2D" uid="uid://b2tk82pjaa6fy" path="res://assets/temporary_assets/Player_Resized.png" id="1_poy5k"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e8x1k"]
+size = Vector2(42, 110)
+
+[node name="Nutrient" type="Area2D" unique_id=417326181]
+script = ExtResource("1_e8x1k")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=969994309]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("1_poy5k")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=470680671]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_e8x1k")

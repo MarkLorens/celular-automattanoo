@@ -6,33 +6,53 @@
 [ext_resource type="PackedScene" uid="uid://crlxvxqo1cc5e" path="res://entities/cell/ringer/ringer.tscn" id="4_ringer"]
 [ext_resource type="Texture2D" uid="uid://5352y1wr46g0" path="res://assets/temporary_assets/armadillo_ability_1.PNG" id="5_a03qe"]
 [ext_resource type="Texture2D" uid="uid://74hys64mqckk" path="res://assets/temporary_assets/fira_walking_2.PNG" id="6_i3sbr"]
-[ext_resource type="Texture2D" uid="uid://m7p83w03vxlw" path="res://assets/temporary_assets/frog_walking_1.PNG" id="7_5nkp2"]
+[ext_resource type="PackedScene" uid="uid://danprjrpnqplt" path="res://entities/cell/mouser/mouser.tscn" id="8_7asd0"]
 [ext_resource type="Script" uid="uid://cgajsibqedijg" path="res://helper_scripts/camera.gd" id="8_n2h5k"]
+[ext_resource type="PackedScene" uid="uid://dga5bwfx8x0" path="res://entities/cell/chaser/chaser.tscn" id="8_xttg2"]
 [ext_resource type="PackedScene" uid="uid://cuexd1ww4bsar" path="res://entities/dish/petri_dish.tscn" id="9_dish"]
+[ext_resource type="PackedScene" uid="uid://depdw7v8tqpoj" path="res://entities/nutrient/nutrient.tscn" id="10_nutri"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
 scene = ExtResource("3_flocker")
 count = 5
+spawn_interval = 20.0
 textures = Array[Texture2D]([ExtResource("5_a03qe"), ExtResource("6_i3sbr")])
 spawn_center = Vector2(-1400, 0)
 spawn_radius = 500.0
-roam_radius = 1000.0
-
-[sub_resource type="Resource" id="Resource_ringers"]
-script = ExtResource("2_colony")
-scene = ExtResource("4_ringer")
-count = 16
-textures = Array[Texture2D]([ExtResource("7_5nkp2")])
-spawn_center = Vector2(1400, 0)
-spawn_radius = 500.0
 roam_radius = 1200.0
 
-[node name="Level01" type="Node2D" unique_id=592872825]
+[sub_resource type="Resource" id="Resource_5nkp2"]
+script = ExtResource("2_colony")
+scene = ExtResource("4_ringer")
+count = 0
+spawn_interval = 45.0
+metadata/_custom_type_script = "uid://blj5aorppmxvy"
+
+[sub_resource type="Resource" id="Resource_7asd0"]
+script = ExtResource("2_colony")
+scene = ExtResource("8_xttg2")
+count = 2
+spawn_interval = 30.0
+spawn_center = Vector2(0, 500)
+roam_radius = 1200.0
+metadata/_custom_type_script = "uid://blj5aorppmxvy"
+
+[sub_resource type="Resource" id="Resource_dfdfd"]
+script = ExtResource("2_colony")
+scene = ExtResource("8_7asd0")
+count = 1
+spawn_interval = 40.0
+max_population = 1
+spawn_center = Vector2(0, -1200)
+metadata/_custom_type_script = "uid://blj5aorppmxvy"
+
+[node name="Level01" type="Node2D" unique_id=592872825 node_paths=PackedStringArray("dish", "camera")]
 script = ExtResource("1_0y5gt")
-colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_ringers")])
+colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_5nkp2"), SubResource("Resource_7asd0"), SubResource("Resource_dfdfd")])
 dish = NodePath("PetriDish")
 camera = NodePath("Camera2D")
+nutrient_scene = ExtResource("10_nutri")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
 radius = 2500.0
