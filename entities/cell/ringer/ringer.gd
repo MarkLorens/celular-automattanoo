@@ -20,10 +20,37 @@ extends Cell
 ## Tangential push. 0 leaves a static shell of parked cells; higher spins faster.
 @export var orbit_weight: float = 1.0
 
+@export_group("Defence")
+## How long a nutrient's protection lasts. While it holds, a predator that
+## reaches this ringer dies on it instead of eating.
+@export var defence_duration: float = 10.0
+
+var _defence_remaining: float = 0.0
+
 func _ready() -> void:
 	super()  # GDScript does not chain _ready(); without this Cell's never runs.
 	add_to_group("ringer")
 	add_to_group(FLOATER_GROUP)
+
+func _physics_process(delta: float) -> void:
+	_defence_remaining = maxf(_defence_remaining - delta, 0.0)
+	super(delta)  # Only the most derived _physics_process is called.
+
+func is_defended() -> bool:
+	return _defence_remaining > 0.0
+
+## Seconds of protection left, for anything that wants to show it.
+func defence_remaining() -> float:
+	return _defence_remaining
+
+## A nutrient turns this ringer poisonous for a while rather than feeding it.
+## Already-protected ringers turn food down instead of topping the timer up, so
+## a shoal of them cannot sit on the food supply and stay permanently armed.
+func on_nutrient_eaten() -> bool:
+	if is_defended():
+		return false
+	_defence_remaining = defence_duration
+	return true
 
 func _steering(_delta: float) -> Vector2:
 	if neighbour_count == 0:

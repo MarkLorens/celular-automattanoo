@@ -27,5 +27,8 @@ func _eat(body: Node2D) -> void:
 	var cell := body as Cell
 	if cell == null or cell.is_queued_for_deletion():
 		return
-	cell.on_nutrient_eaten()
+	# A cell may turn the food down -- a ringer already carrying its protection
+	# does. Refused food stays in the dish for whoever comes along next.
+	if not cell.on_nutrient_eaten():
+		return
 	queue_free()

@@ -19,8 +19,24 @@ extends Cell
 ## is 59 across and prey 79, so this only fires once prey is genuinely inside it.
 @export var consume_radius: float = 80.0
 
+@export_group("Feeding")
+## Every nutrient makes the mouser this much bigger -- sprite, collider and the
+## reach it consumes at, so it grows into a wider hazard rather than just a
+## larger picture of one. Compounds with each meal.
+@export var growth_per_nutrient: float = 1.1
+## Speed multiplier while a nutrient's burst lasts. Only the top speed moves;
+## the steering underneath is untouched, so it still just drifts at the cursor.
+@export var speed_burst: float = 1.5
+## How long that burst runs. Eating again refreshes it rather than stacking it.
+@export var burst_duration: float = 10.0
+
 var wander_offset: Vector2 = Vector2.ZERO
 var time_until_change: float = 0.0
+
+# max_speed is rewritten in place while bursting, so this holds the value to
+# scale from -- the same trick the chaser uses for its hunt boost.
+var _cruise_speed: float = 0.0
+var _burst_remaining: float = 0.0
 
 
 func _ready() -> void:
@@ -30,12 +46,16 @@ func _ready() -> void:
 	# mouser and the chaser from ever treating each other as a meal.
 	add_to_group("mouser")
 	add_to_group(PREDATOR_GROUP)
+	_cruise_speed = max_speed
 	_pick_new_wander()
 
 func _physics_process(delta: float) -> void:
 	time_until_change -= delta
 	if time_until_change <= 0.0:
 		_pick_new_wander()
+
+	_burst_remaining = maxf(_burst_remaining - delta, 0.0)
+	max_speed = _cruise_speed * (speed_burst if is_bursting() else 1.0)
 
 	# Steer toward the mouse, plus a per-member wander offset so they don't all stack.
 	# Clamping the target rather than the mouser is what keeps this smooth: with the
@@ -86,8 +106,46 @@ func _consume_overlapped() -> void:
 		var other := node as Cell
 		if not is_edible(other):
 			continue
-		if global_position.distance_squared_to(other.global_position) <= reach:
-			other.queue_free()
+		if global_position.distance_squared_to(other.global_position) > reach:
+			continue
+		if not try_eat(other):
+			return  # Bounced off a defended one. Nothing more is eaten this frame.
+
+func is_bursting() -> bool:
+	return _burst_remaining > 0.0
+
+## Seconds of speed burst left, for anything that wants to show it.
+func burst_remaining() -> float:
+	return _burst_remaining
+
+## A nutrient makes the mouser bigger and briefly faster. Nothing about how it
+## moves or what it eats changes -- it is the same drift and the same rule,
+## carried out at a larger radius and a higher top speed.
+func on_nutrient_eaten() -> bool:
+	scale *= growth_per_nutrient
+	consume_radius *= growth_per_nutrient
+	_burst_remaining = burst_duration
+	return true
+
+## The mouser is too dumb to be poisoned. It bumps off a defended ringer and
+## carries on, and the ringer is knocked back just as hard -- the one predator
+## that survives the encounter.
+func _on_defended_prey(prey: Cell) -> void:
+	var offset: Vector2 = global_position - prey.global_position
+	var away: Vector2 = offset.normalized()
+	if away.is_zero_approx():
+		away = Vector2.RIGHT.rotated(randf() * TAU)
+
+	# Separate them as well as turning them around. Velocity alone is not enough
+	# when the mouser has no collider to stop it: it would stay inside the ringer
+	# and re-trigger the bounce every frame, buzzing instead of rebounding.
+	var overlap: float = consume_radius - offset.length() + 4.0
+	if overlap > 0.0:
+		global_position = _clamped_to_roam(global_position + away * overlap * 0.5)
+		prey.global_position -= away * overlap * 0.5
+
+	velocity = away * maxf(velocity.length(), min_speed)
+	prey.velocity = -away * maxf(prey.velocity.length(), prey.min_speed)
 
 func _pick_new_wander() -> void:
 	target_angular_speed = randf_range(-max_angular_speed, max_angular_speed)
