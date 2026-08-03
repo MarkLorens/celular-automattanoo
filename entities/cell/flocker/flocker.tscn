@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://lmsuwdasp2pu"]
+
+[ext_resource type="Script" uid="uid://bwh70f18oq01t" path="res://entities/cell/flocker/flocker.gd" id="1_flocker"]
+[ext_resource type="Texture2D" uid="uid://5352y1wr46g0" path="res://assets/temporary_assets/armadillo_ability_1.PNG" id="2_hw4oq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
+radius = 79.00633
+
+[node name="Flocker" type="CharacterBody2D" unique_id=1756454865]
+script = ExtResource("1_flocker")
+max_speed = 80.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=36750086]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_hw4oq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=297928868]
+position = Vector2(8, 10)
+shape = SubResource("CircleShape2D_fey80")

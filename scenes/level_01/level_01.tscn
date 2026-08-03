@@ -1,15 +1,43 @@
 [gd_scene format=3 uid="uid://bvu3eufi08mft"]
 
 [ext_resource type="Script" uid="uid://bljldeqnbu6rl" path="res://scenes/level_01/level_01.gd" id="1_0y5gt"]
-[ext_resource type="PackedScene" uid="uid://lmsuwdasp2pu" path="res://entities/flock/flock.tscn" id="2_n2h5k"]
-[ext_resource type="Texture2D" uid="uid://5352y1wr46g0" path="res://assets/temporary_assets/armadillo_ability_1.PNG" id="3_a03qe"]
-[ext_resource type="Texture2D" uid="uid://74hys64mqckk" path="res://assets/temporary_assets/fira_walking_2.PNG" id="4_i3sbr"]
-[ext_resource type="Texture2D" uid="uid://m7p83w03vxlw" path="res://assets/temporary_assets/frog_walking_1.PNG" id="5_5nkp2"]
+[ext_resource type="Script" uid="uid://blj5aorppmxvy" path="res://entities/cell/cell_colony.gd" id="2_colony"]
+[ext_resource type="PackedScene" uid="uid://lmsuwdasp2pu" path="res://entities/cell/flocker/flocker.tscn" id="3_flocker"]
+[ext_resource type="PackedScene" uid="uid://crlxvxqo1cc5e" path="res://entities/cell/ringer/ringer.tscn" id="4_ringer"]
+[ext_resource type="Texture2D" uid="uid://5352y1wr46g0" path="res://assets/temporary_assets/armadillo_ability_1.PNG" id="5_a03qe"]
+[ext_resource type="Texture2D" uid="uid://74hys64mqckk" path="res://assets/temporary_assets/fira_walking_2.PNG" id="6_i3sbr"]
+[ext_resource type="Texture2D" uid="uid://m7p83w03vxlw" path="res://assets/temporary_assets/frog_walking_1.PNG" id="7_5nkp2"]
+[ext_resource type="Script" uid="uid://cgajsibqedijg" path="res://helper_scripts/camera.gd" id="8_n2h5k"]
+[ext_resource type="PackedScene" uid="uid://cuexd1ww4bsar" path="res://entities/dish/petri_dish.tscn" id="9_dish"]
+
+[sub_resource type="Resource" id="Resource_flockers"]
+script = ExtResource("2_colony")
+scene = ExtResource("3_flocker")
+count = 5
+textures = Array[Texture2D]([ExtResource("5_a03qe"), ExtResource("6_i3sbr")])
+spawn_center = Vector2(-1400, 0)
+spawn_radius = 500.0
+roam_radius = 1000.0
+
+[sub_resource type="Resource" id="Resource_ringers"]
+script = ExtResource("2_colony")
+scene = ExtResource("4_ringer")
+count = 16
+textures = Array[Texture2D]([ExtResource("7_5nkp2")])
+spawn_center = Vector2(1400, 0)
+spawn_radius = 500.0
+roam_radius = 1200.0
 
 [node name="Level01" type="Node2D" unique_id=592872825]
 script = ExtResource("1_0y5gt")
-flock_scene = ExtResource("2_n2h5k")
-flock_textures = Array[Texture2D]([ExtResource("3_a03qe"), ExtResource("4_i3sbr"), ExtResource("5_5nkp2")])
+colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_ringers")])
+dish = NodePath("PetriDish")
+camera = NodePath("Camera2D")
+
+[node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
+radius = 2500.0
+rim_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=371371534]
-zoom = Vector2(0.2, 0.2)
+zoom = Vector2(0.4, 0.4)
+script = ExtResource("8_n2h5k")
