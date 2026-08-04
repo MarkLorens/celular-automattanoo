@@ -15,10 +15,10 @@ min_speed = 20.0
 max_speed = 40.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1678004103]
-scale = Vector2(0.2, 0.2)
+scale = Vector2(0.3, 0.3)
 texture = ExtResource("1_nmder")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1006823412]
 shape = SubResource("CircleShape2D_fey80")
 
-[node name="Shadow" parent="." instance=ExtResource("23_shadow")]
+[node name="Shadow" parent="." unique_id=1156031233 instance=ExtResource("23_shadow")]
