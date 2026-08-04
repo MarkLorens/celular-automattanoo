@@ -80,9 +80,10 @@ class SpawnAbility extends RefCounted:
 
 # Built once in _ready from the nutrient plus every summonable colony.
 var _abilities: Array = []
-# action -> unlock_at, so a capsule can look up when its ability comes online
-# without holding a reference back to the ability object.
-var _unlock_by_action: Dictionary = {}
+# action -> the ability itself, so a capsule can be driven from whichever one it
+# illustrates -- when it unlocks and how far through its cooldown it is -- without
+# the pills having to hold references back to abilities they know nothing about.
+var _ability_by_action: Dictionary = {}
 # Seconds of actual play. _process only ticks while unpaused, so this never
 # advances behind the title card or the end screen -- it is gameplay time, which
 # is what the ability unlocks are measured in.
@@ -141,7 +142,7 @@ func _build_abilities() -> void:
 			colony.summon_cooldown,
 			func(at: Vector2) -> void: _spawn_cell(index, at)))
 	for ability in _abilities:
-		_unlock_by_action[ability.action] = ability.unlock_at
+		_ability_by_action[ability.action] = ability
 
 ## Keeps the gauge hidden and untouchable until the dish has had time to settle.
 ##
@@ -298,11 +299,24 @@ func _process(delta: float) -> void:
 	for ability in _abilities:
 		ability.ready_in = maxf(ability.ready_in - delta, 0.0)
 
-	# Grey each pill until its ability's unlock time has been reached. set_locked
-	# is a no-op unless the state actually flips, so this is cheap every frame.
+	# Grey each pill until its ability's unlock time has been reached, and drain
+	# the recharge pane down as its cooldown runs off. set_locked is a no-op
+	# unless the state actually flips, so this is cheap every frame.
 	for capsule in _capsules:
-		if capsule != null:
-			capsule.set_locked(_elapsed < float(_unlock_by_action.get(capsule.action, 0.0)))
+		if capsule == null:
+			continue
+		var ability: SpawnAbility = _ability_by_action.get(capsule.action)
+		if ability == null:
+			# A pill naming an action no level ability answers to. Left plain and
+			# available rather than dark, so a mis-wired capsule reads as the
+			# oversight it is instead of as an ability that never unlocks.
+			capsule.set_locked(false)
+			capsule.set_cooldown(0.0)
+			continue
+		capsule.set_locked(_elapsed < ability.unlock_at)
+		# An ability with no cooldown is never recharging, and asking how far
+		# through a zero-length wait it is would divide by zero.
+		capsule.set_cooldown(ability.ready_in / ability.cooldown if ability.cooldown > 0.0 else 0.0)
 
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]

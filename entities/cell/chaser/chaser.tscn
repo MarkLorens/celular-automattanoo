@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dga5bwfx8x0"]
 
 [ext_resource type="Script" uid="uid://ykx3wqfx2epc" path="res://entities/cell/chaser/chaser.gd" id="1_gshbv"]
-[ext_resource type="Texture2D" uid="uid://c5o6175y4feos" path="res://assets/cells n stuff/IMG_2288.png" id="2_rmndm"]
+[ext_resource type="Texture2D" uid="uid://c5o6175y4feos" path="res://assets/cells n stuff/chaser/IMG_2288.png" id="2_rmndm"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="22_shadow"]
 [ext_resource type="AudioStream" uid="uid://dvhpr4tqml4v3" path="res://assets/sfx/chaser-eat.wav" id="3_eat"]
 

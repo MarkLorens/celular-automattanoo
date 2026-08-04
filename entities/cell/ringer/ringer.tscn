@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://crlxvxqo1cc5e"]
 
 [ext_resource type="Script" uid="uid://c3x3k1hthwln7" path="res://entities/cell/ringer/ringer.gd" id="1_ringer"]
-[ext_resource type="Texture2D" uid="uid://cpyif0v6t2n33" path="res://assets/cells n stuff/Untitled_Artwork-1 4.png" id="2_vsd03"]
+[ext_resource type="Texture2D" uid="uid://cpyif0v6t2n33" path="res://assets/cells n stuff/ringer/Untitled_Artwork-1 4.png" id="2_vsd03"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="21_shadow"]
 [ext_resource type="AudioStream" uid="uid://bpynu5fyy27xk" path="res://assets/sfx/flocker-ringer-eat.wav" id="3_eat"]
 

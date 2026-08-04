@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://lmsuwdasp2pu"]
 
 [ext_resource type="Script" uid="uid://bwh70f18oq01t" path="res://entities/cell/flocker/flocker.gd" id="1_flocker"]
-[ext_resource type="Texture2D" uid="uid://dsdgeel5wkbsk" path="res://assets/cells n stuff/Untitled_Artwork-1 2.png" id="2_o51xq"]
+[ext_resource type="Texture2D" uid="uid://dsdgeel5wkbsk" path="res://assets/cells n stuff/flocker/Untitled_Artwork-1 2.png" id="2_o51xq"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="20_shadow"]
 [ext_resource type="AudioStream" uid="uid://bpynu5fyy27xk" path="res://assets/sfx/flocker-ringer-eat.wav" id="3_eat"]
 

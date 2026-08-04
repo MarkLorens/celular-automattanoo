@@ -1,7 +1,8 @@
-[gd_scene format=3 uid="uid://bjtvor0hj52ne"]
+[gd_scene load_steps=5 format=3 uid="uid://bjtvor0hj52ne"]
 
 [ext_resource type="Script" uid="uid://c5oul8n3fhgcy" path="res://ui/ability_capsule/ability_capsule.gd" id="1_cap"]
 [ext_resource type="FontFile" uid="uid://csd1bcf6n676b" path="res://assets/fonts/SourceCodePro-Bold.ttf" id="2_bold"]
+[ext_resource type="Texture2D" uid="uid://d4c1ysfuvarbu" path="res://assets/main_background.png" id="3_bg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_pill"]
 bg_color = Color(1, 1, 1, 1)
@@ -30,6 +31,18 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBox_pill")
 
+[node name="Background" type="TextureRect" parent="Mask" unique_id=1071233905]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
 [node name="Image" type="TextureRect" parent="Mask" unique_id=6582743]
 layout_mode = 1
 anchors_preset = 15
@@ -40,6 +53,13 @@ grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
+
+[node name="Cooldown" type="ColorRect" parent="Mask" unique_id=1844920617]
+layout_mode = 0
+offset_right = 96.0
+offset_bottom = 230.0
+mouse_filter = 2
+color = Color(0.12, 0.13, 0.16, 0.55)
 
 [node name="Letter" type="Label" parent="Mask" unique_id=1953115591]
 layout_mode = 1

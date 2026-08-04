@@ -13,7 +13,17 @@ extends Area2D
 ## An Area2D rather than a body on purpose: cells swim straight through it, so
 ## dropping food into a crowd never shoves anybody around.
 
+## Picked at random as the nutrient is dropped, so a dish with food scattered
+## through it does not read as one sprite stamped out over and over. The same
+## arrangement the colonies use for their cells; left empty, whatever sprite the
+## scene ships with stands.
+@export var textures: Array[Texture2D] = []
+
+@onready var sprite: Sprite2D = $Sprite2D
+
 func _ready() -> void:
+	if not textures.is_empty():
+		sprite.texture = textures.pick_random()
 	body_entered.connect(_eat)
 
 func _eat(body: Node2D) -> void:
