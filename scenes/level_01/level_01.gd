@@ -9,7 +9,15 @@ extends Node2D
 @export var camera: Camera2D
 ## Dropped at the cursor on the "spawn_nutrient" action.
 @export var nutrient_scene: PackedScene
-## Seconds the player waits between drops. Doubles as the real cap on how fast
+
+@export_group("Abilities")
+## Every cursor-spawn ability shares one shape: locked until some seconds of play
+## have passed, then usable on its own cooldown, dropping its thing at the mouse.
+## The nutrient is configured here; each colony that names a summon_action adds
+## another, built from the colony's own summon fields.
+## Seconds of play before the nutrient drop unlocks.
+@export var nutrient_unlock_at: float = 80.0
+## Seconds between nutrient drops once unlocked. Also the real cap on how fast
 ## flockers can breed, since a nutrient is what buys a new one.
 @export var nutrient_cooldown: float = 30.0
 
@@ -37,6 +45,14 @@ extends Node2D
 @onready var HUD := $HUD
 @onready var game_timer := $HUD/GameTimer
 @onready var game_over_screen := $UI/GameOverScreen
+# Instruction pills off the right of the dish, one per ability. Fetched softly so
+# a level that has not laid them all out yet still runs. Their locked/greyed state
+# is driven from _process against the same unlock clock the abilities use.
+@onready var _capsules: Array = [
+	get_node_or_null(^"HUD/CapsuleZ"),
+	get_node_or_null(^"HUD/CapsuleX"),
+	get_node_or_null(^"HUD/CapsuleC"),
+]
 
 ## Fires whenever the player moves the gauge. The dish temperature in celsius.
 signal temperature_changed(celsius: float)
@@ -44,8 +60,30 @@ signal temperature_changed(celsius: float)
 ## Current dish temperature. Read-only from outside -- the gauge drives it.
 var temperature: float = 0.0
 
-# Counts down to 0, at which point another nutrient may be dropped.
-var _nutrient_ready_in: float = 0.0
+# A cursor-spawn ability: locked until unlock_at seconds of play, then usable
+# whenever ready_in has counted back down to 0. `spawn` takes the drop position.
+class SpawnAbility extends RefCounted:
+	var action: StringName
+	var unlock_at: float
+	var cooldown: float
+	var spawn: Callable
+	var ready_in: float = 0.0
+
+	func _init(a: StringName, unlock: float, cd: float, s: Callable) -> void:
+		action = a
+		unlock_at = unlock
+		cooldown = cd
+		spawn = s
+
+# Built once in _ready from the nutrient plus every summonable colony.
+var _abilities: Array = []
+# action -> unlock_at, so a capsule can look up when its ability comes online
+# without holding a reference back to the ability object.
+var _unlock_by_action: Dictionary = {}
+# Seconds of actual play. _process only ticks while unpaused, so this never
+# advances behind the title card or the end screen -- it is gameplay time, which
+# is what the ability unlocks are measured in.
+var _elapsed: float = 0.0
 
 # Index-aligned with colonies: each species grows on its own clock.
 var _time_until_spawn: Array[float] = []
@@ -60,6 +98,7 @@ func _ready() -> void:
 	_apply_shadow_lighting()
 	_fit_camera_to_dish()
 	_reveal_gauge_later()
+	_build_abilities()
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
 		_time_until_spawn.append(_first_delay_for(colony))
@@ -76,6 +115,28 @@ func _ready() -> void:
 	# moment the player presses to begin, and every clock starts from here.
 	get_tree().paused = true
 
+## The nutrient plus one summon per colony that asked for one. Nutrients drop a
+## plain scene; a summon reuses the colony's own _spawn_cell, so a summoned cell
+## is set up exactly like a drip-fed one -- same leash, same random texture, same
+## population bookkeeping -- only placed at the cursor instead of on the clock.
+func _build_abilities() -> void:
+	_abilities.append(
+		SpawnAbility.new(&"spawn_nutrient", nutrient_unlock_at, nutrient_cooldown, _spawn_nutrient))
+	for i in colonies.size():
+		var colony: CellColony = colonies[i]
+		if colony == null or colony.summon_action == &"":
+			continue
+		# A per-iteration copy: the lambda captures it by value, so each summon
+		# keeps its own index rather than sharing the loop's final one.
+		var index: int = i
+		_abilities.append(SpawnAbility.new(
+			colony.summon_action,
+			colony.summon_unlock_at,
+			colony.summon_cooldown,
+			func(at: Vector2) -> void: _spawn_cell(index, at)))
+	for ability in _abilities:
+		_unlock_by_action[ability.action] = ability.unlock_at
+
 ## Keeps the gauge hidden and untouchable until the dish has had time to settle.
 ##
 ## The wait lives in its own function rather than in _ready() on purpose. `await`
@@ -90,16 +151,16 @@ func _ready() -> void:
 func _reveal_gauge_later() -> void:
 	if temperature_gauge == null or gauge_spawn_timing <= 0.0:
 		return
-	temperature_gauge.hide()
-	temperature_gauge.process_mode = Node.PROCESS_MODE_DISABLED
+	# Greyed and inert rather than hidden: an unearned gauge stays in its spot,
+	# plainly switched off, matching how the ability capsules read while locked.
+	temperature_gauge.set_locked(true)
 	# process_always = false so the wait counts real play time only: the clock is
 	# started during boot but holds while the title card has the game paused, and
 	# resumes once the player begins. Otherwise it would tick down behind the card.
 	await get_tree().create_timer(gauge_spawn_timing, false).timeout
 	if not is_instance_valid(temperature_gauge):
 		return  # Level torn down while the timer was running.
-	temperature_gauge.show()
-	temperature_gauge.process_mode = Node.PROCESS_MODE_INHERIT
+	temperature_gauge.set_locked(false)
 
 ## How long this colony waits for its first drip-fed cell. Only the opening wait
 ## differs; every spawn after it is spawn_interval apart, which is why the timer
@@ -160,17 +221,26 @@ func _too_hot_for(colony: CellColony) -> bool:
 
 ## _unhandled_input rather than _input, so anything the game grows later -- a
 ## menu, a HUD button -- gets first refusal on the key. is_action_pressed()
-## ignores echoes by default, so holding the key drops one nutrient, not a
-## stream of them.
+## ignores echoes by default, so holding the key spawns one thing, not a stream.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("force_end_game"):
 		game_over()
-	if not event.is_action_pressed("spawn_nutrient"):
 		return
-	if _nutrient_ready_in > 0.0:
-		return  # Still cooling down. The press is refused, not queued.
-	_spawn_nutrient(get_global_mouse_position())
-	_nutrient_ready_in = nutrient_cooldown
+	for ability in _abilities:
+		if event.is_action_pressed(ability.action):
+			_try_use_ability(ability)
+			return
+
+## Fires an ability if it is both unlocked and off cooldown. A press that is too
+## early or too soon is simply refused, not queued -- the same way the nutrient
+## has always ignored a mistimed key.
+func _try_use_ability(ability: SpawnAbility) -> void:
+	if _elapsed < ability.unlock_at:
+		return  # Still locked -- not enough play time yet.
+	if ability.ready_in > 0.0:
+		return  # Still cooling down.
+	ability.spawn.call(get_global_mouse_position())
+	ability.ready_in = ability.cooldown
 	get_viewport().set_input_as_handled()
 
 func game_over() -> void:
@@ -208,7 +278,15 @@ func _clamped_to_dish(point: Vector2) -> Vector2:
 	return centre + normalized.normalized() * limit
 
 func _process(delta: float) -> void:
-	_nutrient_ready_in = maxf(_nutrient_ready_in - delta, 0.0)
+	_elapsed += delta
+	for ability in _abilities:
+		ability.ready_in = maxf(ability.ready_in - delta, 0.0)
+
+	# Grey each pill until its ability's unlock time has been reached. set_locked
+	# is a no-op unless the state actually flips, so this is cheap every frame.
+	for capsule in _capsules:
+		if capsule != null:
+			capsule.set_locked(_elapsed < float(_unlock_by_action.get(capsule.action, 0.0)))
 
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
@@ -246,13 +324,16 @@ func _living(index: int) -> int:
 			living.remove_at(i)
 	return living.size()
 
-func _spawn_cell(index: int) -> void:
+## Places one cell of this colony. `at` is where a summon wants it dropped; left
+## at the sentinel (the drip-feed case) the colony picks its own spot. Either way
+## the cell is set up identically from here down.
+func _spawn_cell(index: int, at: Vector2 = Vector2.INF) -> void:
 	var colony: CellColony = colonies[index]
 	if colony.scene == null:
 		return
 
 	var cell: Cell = colony.scene.instantiate()
-	cell.position = _spawn_position(colony)
+	cell.position = _spawn_position(colony) if at == Vector2.INF else _clamped_to_dish(at)
 	# Spawning somewhere is not the same as belonging there: by default a cell is
 	# free to cross the whole dish, and only stays put if the colony asks for it.
 	if colony.roam_radius <= 0.0 and dish != null:
