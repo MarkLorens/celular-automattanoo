@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ykx3wqfx2epc" path="res://entities/cell/chaser/chaser.gd" id="1_gshbv"]
 [ext_resource type="Texture2D" uid="uid://0tbt6las8jst" path="res://assets/temporary_assets/rhino_walking_1.PNG" id="1_h4drc"]
+[ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="22_shadow"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rmndm"]
 radius = 86.0
@@ -32,3 +33,5 @@ collision_mask = 3
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=102727381]
 shape = SubResource("CircleShape2D_fey80")
 debug_color = Color(0.8467286, 0, 0.1221027, 0.41960785)
+
+[node name="Shadow" parent="." instance=ExtResource("22_shadow")]

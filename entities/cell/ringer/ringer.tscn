@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c3x3k1hthwln7" path="res://entities/cell/ringer/ringer.gd" id="1_ringer"]
 [ext_resource type="Texture2D" uid="uid://m7p83w03vxlw" path="res://assets/temporary_assets/frog_walking_1.PNG" id="2_frog"]
+[ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="21_shadow"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ring01"]
 radius = 79.00633
@@ -21,3 +22,5 @@ texture = ExtResource("2_frog")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1292954541]
 position = Vector2(8, 10)
 shape = SubResource("CircleShape2D_ring01")
+
+[node name="Shadow" parent="." instance=ExtResource("21_shadow")]

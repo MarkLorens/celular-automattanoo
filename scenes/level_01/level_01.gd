@@ -13,6 +13,18 @@ extends Node2D
 ## flockers can breed, since a nutrient is what buys a new one.
 @export var nutrient_cooldown: float = 10.0
 
+@export_group("Lighting")
+## Where the lamp hangs over the dish. Every shadow slides away from it.
+@export var light_position: Vector2 = Vector2.ZERO
+## Constant drop every shadow gets, so something sitting directly under the lamp
+## still has one instead of looking pasted flat to the glass.
+@export var shadow_base_offset: Vector2 = Vector2(18.0, 24.0)
+## Extra slide per unit of distance from the lamp, which fans the shadows out
+## across the dish. 0 points every shadow the same way, like a distant sun.
+@export var shadow_falloff: float = 0.012
+## Cap, so cells out at the rim do not trail absurd shadows.
+@export var shadow_max_offset: float = 45.0
+
 # Counts down to 0, at which point another nutrient may be dropped.
 var _nutrient_ready_in: float = 0.0
 
@@ -25,6 +37,7 @@ var _alive: Array[Array] = []
 
 func _ready() -> void:
 	_resolve_scene_refs()
+	_apply_shadow_lighting()
 	_fit_camera_to_dish()
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
@@ -37,14 +50,23 @@ func _ready() -> void:
 				break  # count overshooting max_population is the cap's problem.
 			_spawn_cell(i)
 
-## The exported node references do not survive the scene file. GDScript leaves
-## PROPERTY_USAGE_NODE_PATH_FROM_SCENE_ROOT off these properties, so the stored
+## Shadows read the lamp off statics, so the whole dish agrees on one light
+## without every cell having to carry a reference to it. Set before anything
+## spawns, or the first batch drops its shadows using the built-in defaults.
+func _apply_shadow_lighting() -> void:
+	DropShadow.light_position = light_position
+	DropShadow.base_offset = shadow_base_offset
+	DropShadow.falloff = shadow_falloff
+	DropShadow.max_offset = shadow_max_offset
+
+## The exported node references may not survive the scene file: without
+## PROPERTY_USAGE_NODE_PATH_FROM_SCENE_ROOT on the property, the stored
 ## NodePath("PetriDish") is never turned into a node and `dish` simply loads
-## null -- which silently disabled the camera fit, every colony's leash and the
+## null -- which silently disables the camera fit, every colony's leash and the
 ## nutrient clamp, since all three check for null and give up quietly.
 ##
-## Falling back to the conventional child names is what actually holds this
-## together. An export that does arrive populated still wins.
+## Falling back to the conventional child names is the safety net. An export
+## that does arrive populated still wins.
 func _resolve_scene_refs() -> void:
 	if dish == null:
 		dish = get_node_or_null(^"PetriDish") as PetriDish
