@@ -24,6 +24,11 @@ extends Cell
 ## How long a nutrient's protection lasts. While it holds, a predator that
 ## reaches this ringer dies on it instead of eating.
 @export var defence_duration: float = 10.0
+## Worn while the protection holds, so an armed ringer reads as dangerous at a
+## glance instead of the defence being invisible until something dies on it.
+## Multiplied over the sprite rather than painted on it, which is what keeps it
+## a soft flush of red over the artwork instead of a flat repaint.
+@export var defended_tint: Color = Color(1.0, 0.55, 0.5)
 
 @export_group("Temperature")
 ## Speed at the cold end of the gauge, and at the hot end. In between sits
@@ -43,17 +48,32 @@ var _defence_remaining: float = 0.0
 var _base_max: float = 0.0
 var _base_min: float = 0.0
 
+# What the sprite looks like unarmed, so the tint lifts back to whatever the
+# scene set rather than to an assumed white.
+var _base_modulate: Color = Color.WHITE
+
 func _ready() -> void:
 	super()  # GDScript does not chain _ready(); without this Cell's never runs.
 	add_to_group("ringer")
 	add_to_group(FLOATER_GROUP)
 	_base_max = max_speed
 	_base_min = min_speed
+	_base_modulate = sprite.modulate
 
 func _physics_process(delta: float) -> void:
 	_defence_remaining = maxf(_defence_remaining - delta, 0.0)
+	_apply_defence_tint()
 	_apply_temperature()
 	super(delta)  # Only the most derived _physics_process is called.
+
+## Puts the warning colour on while the defence holds and takes it off when the
+## timer runs out. Called every frame but assigns only on the flip, the same way
+## the HUD's locked states do -- which also means it cannot get stuck red if the
+## defence lapses on a frame nothing else touches.
+func _apply_defence_tint() -> void:
+	var wanted: Color = defended_tint if is_defended() else _base_modulate
+	if sprite.modulate != wanted:
+		sprite.modulate = wanted
 
 ## Warm medium thins out and the ringer drifts faster through it; cold thickens
 ## and it slows. Two straight runs meeting at neutral_celsius, because the scene

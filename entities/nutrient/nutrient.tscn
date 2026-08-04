@@ -1,25 +1,32 @@
 [gd_scene format=3 uid="uid://depdw7v8tqpoj"]
 
 [ext_resource type="Script" uid="uid://dhn4l5r1hc7vm" path="res://entities/nutrient/nutrient.gd" id="1_e8x1k"]
+[ext_resource type="Texture2D" uid="uid://cu7vpb3komgfa" path="res://assets/cells n stuff/nutrient/IMG_2297.png" id="2_n2297"]
+[ext_resource type="Texture2D" uid="uid://cuerpa0v4el8q" path="res://assets/cells n stuff/nutrient/IMG_2298.png" id="3_n2298"]
+[ext_resource type="Texture2D" uid="uid://bljtwlvg3c2p8" path="res://assets/cells n stuff/nutrient/IMG_2299.png" id="4_n2299"]
+[ext_resource type="Texture2D" uid="uid://cqnaqge8477qu" path="res://assets/cells n stuff/nutrient/IMG_2300.png" id="5_n2300"]
+[ext_resource type="Texture2D" uid="uid://vm1w5hav0u20" path="res://assets/cells n stuff/nutrient/IMG_2301.png" id="6_n2301"]
+[ext_resource type="Texture2D" uid="uid://pugdtev0qtjo" path="res://assets/cells n stuff/nutrient/IMG_2302.png" id="7_n2302"]
+[ext_resource type="Texture2D" uid="uid://cp0d3dgr4pltx" path="res://assets/cells n stuff/nutrient/IMG_2303.png" id="8_n2303"]
+[ext_resource type="Texture2D" uid="uid://dgq8pqctje7mw" path="res://assets/cells n stuff/nutrient/IMG_2304.png" id="9_n2304"]
+[ext_resource type="Texture2D" uid="uid://bnqt1oame467j" path="res://assets/cells n stuff/nutrient/IMG_2305.png" id="10_n2305"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="24_shadow"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_e8x1k"]
-load_path = "res://.godot/imported/IMG_2297.png-ffefef2648a9357fe2684317d5e14076.ctex"
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e8x1k"]
-size = Vector2(42, 110)
+size = Vector2(85, 103)
 
 [node name="Nutrient" type="Area2D" unique_id=417326181]
 collision_layer = 0
 collision_mask = 13
 script = ExtResource("1_e8x1k")
+textures = Array[Texture2D]([ExtResource("2_n2297"), ExtResource("3_n2298"), ExtResource("4_n2299"), ExtResource("5_n2300"), ExtResource("6_n2301"), ExtResource("7_n2302"), ExtResource("8_n2303"), ExtResource("9_n2304"), ExtResource("10_n2305")])
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=969994309]
-scale = Vector2(0.2, 0.2)
-texture = SubResource("CompressedTexture2D_e8x1k")
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_n2297")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=470680671]
-position = Vector2(0, 1)
+position = Vector2(1.5, -6.5)
 shape = SubResource("RectangleShape2D_e8x1k")
 
 [node name="Shadow" parent="." unique_id=170333087 instance=ExtResource("24_shadow")]
