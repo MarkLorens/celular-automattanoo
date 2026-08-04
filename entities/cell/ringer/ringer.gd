@@ -25,16 +25,58 @@ extends Cell
 ## reaches this ringer dies on it instead of eating.
 @export var defence_duration: float = 10.0
 
+@export_group("Temperature")
+## Speed at the cold end of the gauge, and at the hot end. In between sits
+## neutral_celsius, where the ringer runs at whatever max_speed its scene sets.
+## The curve hinges there rather than running straight from cold to hot, so the
+## scene's value stays the honest "normal" instead of being quietly overridden.
+@export var cold_speed: float = 60.0
+@export var hot_speed: float = 200.0
+@export var cold_celsius: float = 0.0
+@export var neutral_celsius: float = 50.0
+@export var hot_celsius: float = 100.0
+
 var _defence_remaining: float = 0.0
+
+# max_speed and min_speed are rewritten every frame from the dish temperature,
+# so these hold the scene's own values for the curve to hinge on.
+var _base_max: float = 0.0
+var _base_min: float = 0.0
 
 func _ready() -> void:
 	super()  # GDScript does not chain _ready(); without this Cell's never runs.
 	add_to_group("ringer")
 	add_to_group(FLOATER_GROUP)
+	_base_max = max_speed
+	_base_min = min_speed
 
 func _physics_process(delta: float) -> void:
 	_defence_remaining = maxf(_defence_remaining - delta, 0.0)
+	_apply_temperature()
 	super(delta)  # Only the most derived _physics_process is called.
+
+## Warm medium thins out and the ringer drifts faster through it; cold thickens
+## and it slows. Two straight runs meeting at neutral_celsius, because the scene
+## speed is the middle of the range rather than the average of its ends.
+func _apply_temperature() -> void:
+	var target: float = _blend(dish_celsius, cold_celsius, neutral_celsius,
+		cold_speed, _base_max)
+	if dish_celsius > neutral_celsius:
+		target = _blend(dish_celsius, neutral_celsius, hot_celsius,
+			_base_max, hot_speed)
+	max_speed = target
+	# The floor rides along with the ceiling. Left alone it could end up above
+	# max_speed in the cold, and a ringer's slowest drift ought to answer to the
+	# temperature too.
+	min_speed = _base_min * target / maxf(_base_max, 0.001)
+
+## Straight-line blend that survives a zero-width span instead of dividing by
+## zero, and never reads past either end.
+static func _blend(value: float, from: float, to: float,
+		low: float, high: float) -> float:
+	if is_equal_approx(from, to):
+		return high
+	return low + (high - low) * clampf((value - from) / (to - from), 0.0, 1.0)
 
 func is_defended() -> bool:
 	return _defence_remaining > 0.0

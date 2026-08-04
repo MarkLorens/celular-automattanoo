@@ -55,6 +55,15 @@ const FLOATER_GROUP := &"floater"
 ## a second predator spooks everything the first one does.
 const PREDATOR_GROUP := &"predator"
 
+## Dish temperature in celsius, written by the level whenever the player moves
+## the gauge. Static because it is one condition the whole dish shares, not
+## something each cell carries around -- and because every species is going to
+## want to read it for something different.
+##
+## The level writes it on startup as well as on change: statics outlive a scene
+## reload, so without that a restarted level would inherit the last run's heat.
+static var dish_celsius: float = 0.0
+
 ## Live cells bucketed by species, keyed on the species script itself. Species
 ## never perceive each other, so a cell only ever walks its own bucket -- and
 ## the script being the key means a species cannot be mis-tagged.

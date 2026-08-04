@@ -9,6 +9,11 @@ extends Resource
 @export var count: int = 20
 ## Seconds between drip-fed extra cells. 0 for a fixed population.
 @export var spawn_interval: float = 0.0
+## Drip-feeding stops once the dish reaches this temperature. Only the automatic
+## spawn is affected -- a species that breeds by some other route, as flockers do
+## off nutrients, keeps doing so in the heat. Left above the gauge's ceiling the
+## colony never stops, which is every colony that has not asked to care.
+@export var halts_at_celsius: float = 1000.0
 ## Ceiling on how many of this colony may be alive at once. 0 for no ceiling.
 ## The drip feed keeps running underneath it, so a species capped at one is a
 ## single specimen that comes back an interval after something kills it, rather

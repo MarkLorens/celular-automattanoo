@@ -13,6 +13,13 @@ extends Node2D
 ## flockers can breed, since a nutrient is what buys a new one.
 @export var nutrient_cooldown: float = 10.0
 
+@export_group("Temperature")
+## The gauge the player drags. Its 0..1 fill is read as a temperature between
+## the two below.
+@export var temperature_gauge: ArcMeter
+@export var min_celsius: float = 0.0
+@export var max_celsius: float = 100.0
+
 @export_group("Lighting")
 ## Where the lamp hangs over the dish. Every shadow slides away from it.
 @export var light_position: Vector2 = Vector2.ZERO
@@ -24,6 +31,12 @@ extends Node2D
 @export var shadow_falloff: float = 0.012
 ## Cap, so cells out at the rim do not trail absurd shadows.
 @export var shadow_max_offset: float = 45.0
+
+## Fires whenever the player moves the gauge. The dish temperature in celsius.
+signal temperature_changed(celsius: float)
+
+## Current dish temperature. Read-only from outside -- the gauge drives it.
+var temperature: float = 0.0
 
 # Counts down to 0, at which point another nutrient may be dropped.
 var _nutrient_ready_in: float = 0.0
@@ -37,6 +50,7 @@ var _alive: Array[Array] = []
 
 func _ready() -> void:
 	_resolve_scene_refs()
+	_wire_temperature()
 	_apply_shadow_lighting()
 	_fit_camera_to_dish()
 	for i in colonies.size():
@@ -72,6 +86,30 @@ func _resolve_scene_refs() -> void:
 		dish = get_node_or_null(^"PetriDish") as PetriDish
 	if camera == null:
 		camera = get_node_or_null(^"Camera2D") as Camera2D
+	if temperature_gauge == null:
+		temperature_gauge = get_node_or_null(^"HUD/TemperatureGauge") as ArcMeter
+
+## The gauge is a plain slider that knows nothing about degrees; turning its fill
+## into a temperature is the level's job. Read once at startup too, so a gauge
+## saved part-filled starts the dish at the matching heat rather than at zero.
+func _wire_temperature() -> void:
+	# Pushed even with no gauge present, because Cell.dish_celsius is a static
+	# that outlives a scene reload and would otherwise start at the last run's
+	# reading rather than this one's.
+	_on_gauge_moved(temperature_gauge.value if temperature_gauge != null else 0.0)
+	if temperature_gauge != null:
+		temperature_gauge.value_changed.connect(_on_gauge_moved)
+
+func _on_gauge_moved(value: float) -> void:
+	temperature = lerpf(min_celsius, max_celsius, value)
+	Cell.dish_celsius = temperature
+	temperature_changed.emit(temperature)
+
+## Whether the dish is currently too hot for this colony to drip-feed. Says
+## nothing about breeding: a flocker eating a nutrient still splits at 90
+## degrees, which is the whole point of the rule.
+func _too_hot_for(colony: CellColony) -> bool:
+	return temperature >= colony.halts_at_celsius
 
 ## _unhandled_input rather than _input, so anything the game grows later -- a
 ## menu, a HUD button -- gets first refusal on the key. is_action_pressed()
@@ -116,11 +154,12 @@ func _process(delta: float) -> void:
 		var colony: CellColony = colonies[i]
 		if colony == null or colony.spawn_interval <= 0.0:
 			continue
-		# A colony sitting at its cap parks its timer at full rather than burning
-		# it down against a spawn that cannot happen. A kill is then followed by
-		# a whole interval of absence, instead of by whatever happened to be
-		# left on a clock that ran while the slot was occupied.
-		if _at_cap(i):
+		# A colony that cannot spawn parks its timer at full rather than burning
+		# it down against a spawn that cannot happen -- whether it is at its
+		# population cap or the dish has been cooked past its limit. Either way
+		# the block lifting is followed by a whole interval, instead of by
+		# whatever happened to be left on a clock that ran while it was stuck.
+		if _at_cap(i) or _too_hot_for(colony):
 			_time_until_spawn[i] = colony.spawn_interval
 			continue
 		_time_until_spawn[i] -= delta
