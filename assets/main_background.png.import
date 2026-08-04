@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cyewmaqk14bp7"
-path="res://.godot/imported/3ntr0py_Logo.png.webp-b3820a223bb8f61c7d2ba79557d5cd58.ctex"
+uid="uid://d4c1ysfuvarbu"
+path="res://.godot/imported/main_background.png-e4d07e18603c5231a1290c3a0e0429cf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui_stuff/3ntr0py_Logo.png.webp"
-dest_files=["res://.godot/imported/3ntr0py_Logo.png.webp-b3820a223bb8f61c7d2ba79557d5cd58.ctex"]
+source_file="res://assets/main_background.png"
+dest_files=["res://.godot/imported/main_background.png-e4d07e18603c5231a1290c3a0e0429cf.ctex"]
 
 [params]
 
