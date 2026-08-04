@@ -92,6 +92,7 @@ func on_nutrient_eaten() -> bool:
 	if is_defended():
 		return false
 	_defence_remaining = defence_duration
+	Audio.play_sfx(eat_sound)
 	return true
 
 func _steering(_delta: float) -> Vector2:

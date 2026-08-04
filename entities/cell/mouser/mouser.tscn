@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b6wcgq6w60wi4" path="res://entities/cell/mouser/mouser.gd" id="1_ptgcb"]
 [ext_resource type="Texture2D" uid="uid://bjugot8gbyg37" path="res://assets/cells n stuff/IMG_2296.png" id="2_ica6x"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="23_shadow"]
+[ext_resource type="AudioStream" uid="uid://c0ea3awegnd1m" path="res://assets/sfx/mouser-eat.wav" id="3_eat"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
 radius = 59.07622
@@ -13,6 +14,7 @@ collision_mask = 0
 script = ExtResource("1_ptgcb")
 min_speed = 20.0
 max_speed = 40.0
+eat_sound = ExtResource("3_eat")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1678004103]
 scale = Vector2(0.3, 0.3)

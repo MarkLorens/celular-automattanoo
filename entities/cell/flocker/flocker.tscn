@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bwh70f18oq01t" path="res://entities/cell/flocker/flocker.gd" id="1_flocker"]
 [ext_resource type="Texture2D" uid="uid://dsdgeel5wkbsk" path="res://assets/cells n stuff/Untitled_Artwork-1 2.png" id="2_o51xq"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="20_shadow"]
+[ext_resource type="AudioStream" uid="uid://bpynu5fyy27xk" path="res://assets/sfx/flocker-ringer-eat.wav" id="3_eat"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
 radius = 79.00633
@@ -15,6 +16,7 @@ script = ExtResource("1_flocker")
 min_speed = 80.0
 max_speed = 80.0
 max_force = 400.0
+eat_sound = ExtResource("3_eat")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=36750086]
 texture = ExtResource("2_o51xq")

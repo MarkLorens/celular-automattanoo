@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://bjtvor0hj52ne"]
 
 [ext_resource type="Script" uid="uid://c5oul8n3fhgcy" path="res://ui/ability_capsule/ability_capsule.gd" id="1_cap"]
-[ext_resource type="Texture2D" uid="uid://d4c1ysfuvarbu" path="res://assets/main_background.png" id="2_0mm4h"]
 [ext_resource type="FontFile" uid="uid://csd1bcf6n676b" path="res://assets/fonts/SourceCodePro-Bold.ttf" id="2_bold"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6qadh"]
-texture = ExtResource("2_0mm4h")
+[sub_resource type="StyleBoxFlat" id="StyleBox_pill"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 48
+corner_radius_top_right = 48
+corner_radius_bottom_right = 48
+corner_radius_bottom_left = 48
 
 [node name="AbilityCapsule" type="Control" unique_id=1410011773]
 custom_minimum_size = Vector2(96, 230)
@@ -25,7 +28,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_6qadh")
+theme_override_styles/panel = SubResource("StyleBox_pill")
 
 [node name="Image" type="TextureRect" parent="Mask" unique_id=6582743]
 layout_mode = 1

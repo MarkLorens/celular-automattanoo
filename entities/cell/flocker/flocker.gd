@@ -78,6 +78,7 @@ func on_nutrient_eaten() -> bool:
 		# The tree cannot be touched while the physics server is flushing
 		# queries, and that is exactly when a nutrient reports being eaten.
 		get_parent().add_child.call_deferred(child)
+	Audio.play_sfx(eat_sound)
 	return true
 
 func _steering(delta: float) -> Vector2:

@@ -45,6 +45,9 @@ extends Node2D
 @onready var HUD := $HUD
 @onready var game_timer := $HUD/GameTimer
 @onready var game_over_screen := $UI/GameOverScreen
+# The four crossfading heat beds. Softly fetched so the level still runs without
+# them, and null-checked at every call site below.
+@onready var _temp_ambience: TemperatureAmbience = get_node_or_null(^"TemperatureAmbience")
 # Instruction pills off the right of the dish, one per ability. Fetched softly so
 # a level that has not laid them all out yet still runs. Their locked/greyed state
 # is driven from _process against the same unlock clock the abilities use.
@@ -99,6 +102,9 @@ func _ready() -> void:
 	_fit_camera_to_dish()
 	_reveal_gauge_later()
 	_build_abilities()
+	# Idempotent: coming in from the menu the track is already playing and this
+	# leaves it untouched; after a retry it brings the stopped track back.
+	Audio.play_music()
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
 		_time_until_spawn.append(_first_delay_for(colony))
@@ -211,6 +217,10 @@ func _wire_temperature() -> void:
 func _on_gauge_moved(value: float) -> void:
 	temperature = lerpf(min_celsius, max_celsius, value)
 	Cell.dish_celsius = temperature
+	if dish != null:
+		dish.temperature = temperature
+	if _temp_ambience != null:
+		_temp_ambience.set_temperature(temperature)
 	temperature_changed.emit(temperature)
 
 ## Whether the dish is currently too hot for this colony to drip-feed. Says
@@ -250,6 +260,12 @@ func game_over() -> void:
 	# spawn clock and the timer itself in one move; the end screen keeps running
 	# because its process_mode is set to run while paused, so Restart still works.
 	get_tree().paused = true
+
+	# The run is over, so its sound stops with it: the music (which otherwise plays
+	# on unbroken) and the heat beds both fall silent behind the end screen.
+	Audio.stop_music()
+	if _temp_ambience != null:
+		_temp_ambience.stop()
 
 	HUD.hide()
 	game_over_screen.show_result(game_timer.final_time)
