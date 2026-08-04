@@ -33,6 +33,15 @@ extends Cell
 ## there is no contact for physics to report and this is the only test there is.
 @export var catch_radius: float = 100.0
 
+@export_group("Temperature")
+## Speed multiplier once the dish is colder than chill_celsius. A flat step, not
+## a ramp: the chaser gets no faster still as the dish keeps cooling, so there
+## is a single "cold chaser" speed to balance against rather than a sliding one.
+@export var chill_multiplier: float = 2.0
+## At this temperature and above the chaser runs at its normal speed. Below it,
+## chill_multiplier applies.
+@export var chill_celsius: float = 15.0
+
 @onready var sensor: Area2D = $Area2D
 
 var prey: Cell = null
@@ -58,12 +67,23 @@ func _ready() -> void:
 func is_hunting() -> bool:
 	return prey != null
 
+## Whether the dish is cold enough to have sped this chaser up. Strictly below,
+## so the stated threshold itself is still normal speed.
+func is_chilled() -> bool:
+	return dish_celsius < chill_celsius
+
 func _steering(delta: float) -> Vector2:
 	_catch_touching()
 	_update_hunt(delta)
 
+	# The cold multiplies the hunt rather than replacing it, so a chilled chaser
+	# mid-burst is very quick indeed. That compounding is deliberate.
 	var boost: float = chase_multiplier if is_hunting() else 1.0
+	boost *= chill_multiplier if is_chilled() else 1.0
 	max_speed = _cruise_speed * boost
+	# Turning force rides along with speed, as it does for the hunt boost. A
+	# chaser given twice the speed and the same force would swing wide on every
+	# corner instead of simply being faster.
 	max_force = _cruise_force * boost
 	wander_weight = _cruise_wander * (hunt_wander_scale if is_hunting() else 1.0)
 
