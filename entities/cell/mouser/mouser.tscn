@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://danprjrpnqplt"]
 
-[ext_resource type="Texture2D" uid="uid://ctmkqwlo8i0qy" path="res://assets/temporary_assets/Player_Wheelchair_Resized.png" id="1_nmder"]
 [ext_resource type="Script" uid="uid://b6wcgq6w60wi4" path="res://entities/cell/mouser/mouser.gd" id="1_ptgcb"]
+[ext_resource type="Texture2D" uid="uid://bjugot8gbyg37" path="res://assets/cells n stuff/IMG_2296.png" id="2_ica6x"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="23_shadow"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_fey80"]
@@ -16,7 +16,7 @@ max_speed = 40.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1678004103]
 scale = Vector2(0.3, 0.3)
-texture = ExtResource("1_nmder")
+texture = ExtResource("2_ica6x")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1006823412]
 shape = SubResource("CircleShape2D_fey80")
