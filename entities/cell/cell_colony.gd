@@ -40,6 +40,13 @@ extends Resource
 @export var summon_cooldown: float = 0.0
 
 @export_group("Placement")
+## Drop this colony's cells in the band just inside the glass rather than out in
+## the medium -- where a species that lives on the rim ought to arrive. Beats
+## spawn_anywhere and the patch alike when it is on.
+@export var spawn_at_rim: bool = false
+## How deep that band runs, as a fraction of the way in from the leash. 0 puts
+## every cell exactly on it; 0.15 scatters them through the outer sixth.
+@export_range(0.0, 1.0, 0.01) var spawn_rim_depth: float = 0.15
 ## Scatter this colony across the whole dish rather than the patch below. On by
 ## default: a colony is a species, not a territory, so prey and predator alike
 ## start life anywhere in the glass.

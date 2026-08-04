@@ -2,15 +2,26 @@
 
 [ext_resource type="Texture2D" uid="uid://cluelehf3cca5" path="res://assets/cells n stuff/edger/IMG_2281.png" id="1_fqijc"]
 [ext_resource type="Script" uid="uid://n24fya71m3k6" path="res://entities/cell/edger/edger.gd" id="1_o1y32"]
+[ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="2_shadow"]
+[ext_resource type="AudioStream" uid="uid://bpynu5fyy27xk" path="res://assets/sfx/flocker-ringer-eat.wav" id="3_eat"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_o1y32"]
 radius = 135.00371
 
 [node name="Edger" type="CharacterBody2D" unique_id=1457227247]
 script = ExtResource("1_o1y32")
+min_speed = 40.0
+max_speed = 100.0
+max_force = 400.0
+separation_radius = 340.0
+wander_weight = 0.15
+roam_radius = 0.0
+eat_sound = ExtResource("3_eat")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=280949844]
 texture = ExtResource("1_fqijc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1351725833]
 shape = SubResource("CircleShape2D_o1y32")
+
+[node name="Shadow" parent="." unique_id=1904471622 instance=ExtResource("2_shadow")]

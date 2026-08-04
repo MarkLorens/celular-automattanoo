@@ -237,6 +237,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("force_end_game"):
 		game_over()
 		return
+	if event.is_action_pressed("pause_game"):
+		get_tree().paused = !get_tree().paused
 	for ability in _abilities:
 		if event.is_action_pressed(ability.action):
 			_try_use_ability(ability)
@@ -330,10 +332,27 @@ func _process(delta: float) -> void:
 		if _at_cap(i) or _too_hot_for(colony):
 			_time_until_spawn[i] = colony.spawn_interval
 			continue
-		_time_until_spawn[i] -= delta
+		# Run down at whatever pace the colony is currently breeding at rather
+		# than in real seconds, so a species that thrives on something -- the
+		# cold, a nutrient just eaten -- fills the dish faster while it lasts.
+		_time_until_spawn[i] -= delta * _breeding_rate(i)
 		if _time_until_spawn[i] <= 0.0:
 			_time_until_spawn[i] = colony.spawn_interval
 			_spawn_cell(i)
+
+## How fast this colony is breeding, as a multiple of its own spawn_interval.
+## Asked of the cells rather than of the colony resource because the answer can
+## depend on what they are living through, which the resource knows nothing
+## about. One member speaks for all of them -- the drip feed is a single clock
+## for the species, not something each cell keeps its own copy of -- and a
+## colony with nobody left simply breeds at its plain pace, which is the pace it
+## is being re-seeded at anyway.
+func _breeding_rate(index: int) -> float:
+	# _living() prunes the eaten as it counts, so the survivor it leaves at the
+	# front is a cell that is genuinely still there to be asked.
+	if _living(index) == 0:
+		return 1.0
+	return _alive[index][0].breeding_rate()
 
 ## Whether this colony already has as many alive as it is allowed. A
 ## max_population of 0 means no ceiling, which is every colony bar the ones that
@@ -390,10 +409,21 @@ func _spawn_cell(index: int, at: Vector2 = Vector2.INF) -> void:
 ## specifically asks to be dropped in a patch, and clamped either way so nothing
 ## can be placed out through the glass.
 func _spawn_position(colony: CellColony) -> Vector2:
+	if colony.spawn_at_rim and dish != null:
+		return dish.global_position + _random_on_rim(dish.leash_radii(), colony.spawn_rim_depth)
 	if colony.spawn_anywhere and dish != null:
 		return dish.global_position + _random_in_oval(dish.leash_radii())
 	return _clamped_to_dish(
 		colony.spawn_center + _random_in_oval(Vector2.ONE * colony.spawn_radius))
+
+## A point in the band just inside the leash: an even bearing, at a random depth
+## through the outer `depth` of the oval. Even by bearing rather than by area,
+## which is the opposite of _random_in_oval and deliberately so -- a rim colony
+## wants to arrive spread right around the glass, not bunched into the stretches
+## where the oval happens to be widest.
+func _random_on_rim(of_radii: Vector2, depth: float) -> Vector2:
+	var inset: float = 1.0 - randf() * clampf(depth, 0.0, 1.0)
+	return Vector2.RIGHT.rotated(randf() * TAU) * of_radii * inset
 
 ## Uniformly distributed point inside an oval of these radii. The square root is
 ## what makes it even by area -- sampling the radius directly bunches cells up

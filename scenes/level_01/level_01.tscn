@@ -46,6 +46,14 @@
 [ext_resource type="Texture2D" uid="uid://ds1f1hfwbcdrc" path="res://assets/background_freeze.png" id="44_freeze"]
 [ext_resource type="Texture2D" uid="uid://ddyv42fiv2jhy" path="res://assets/background_hot.png" id="45_hot"]
 [ext_resource type="PackedScene" uid="uid://b27mq2ff1fyka" path="res://audio/temperature_ambience.tscn" id="46_amb"]
+[ext_resource type="PackedScene" uid="uid://dt2ej4a2ipax4" path="res://entities/cell/edger/edger.tscn" id="47_edger"]
+[ext_resource type="Texture2D" uid="uid://cluelehf3cca5" path="res://assets/cells n stuff/edger/IMG_2281.png" id="e0"]
+[ext_resource type="Texture2D" uid="uid://dxjibmy4afd4m" path="res://assets/cells n stuff/edger/IMG_2282.png" id="e1"]
+[ext_resource type="Texture2D" uid="uid://bfcihcp0vuauv" path="res://assets/cells n stuff/edger/IMG_2283.png" id="e2"]
+[ext_resource type="Texture2D" uid="uid://bkhtjpe0nafs2" path="res://assets/cells n stuff/edger/IMG_2284.png" id="e3"]
+[ext_resource type="Texture2D" uid="uid://dxi6fc87l7o3n" path="res://assets/cells n stuff/edger/IMG_2285.png" id="e4"]
+[ext_resource type="Texture2D" uid="uid://82sj3edikicd" path="res://assets/cells n stuff/edger/IMG_2286.png" id="e5"]
+[ext_resource type="Texture2D" uid="uid://cxp63f6hpjkcu" path="res://assets/cells n stuff/edger/IMG_2287.png" id="e6"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -92,9 +100,20 @@ max_population = 1
 spawn_center = Vector2(0, -1200)
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
+[sub_resource type="Resource" id="Resource_edgers"]
+script = ExtResource("2_colony")
+scene = ExtResource("47_edger")
+count = 2
+spawn_interval = 30.0
+first_spawn_delay = 80.0
+textures = Array[Texture2D]([ExtResource("e0"), ExtResource("e1"), ExtResource("e2"), ExtResource("e3"), ExtResource("e4"), ExtResource("e5"), ExtResource("e6")])
+spawn_at_rim = true
+spawn_rim_depth = 0.12
+metadata/_custom_type_script = "uid://blj5aorppmxvy"
+
 [node name="Level01" type="Node2D" unique_id=592872825 node_paths=PackedStringArray("dish", "camera", "temperature_gauge")]
 script = ExtResource("1_0y5gt")
-colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_5nkp2"), SubResource("Resource_7asd0"), SubResource("Resource_dfdfd")])
+colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_5nkp2"), SubResource("Resource_7asd0"), SubResource("Resource_dfdfd"), SubResource("Resource_edgers")])
 dish = NodePath("PetriDish")
 camera = NodePath("Camera2D")
 nutrient_scene = ExtResource("10_nutri")
