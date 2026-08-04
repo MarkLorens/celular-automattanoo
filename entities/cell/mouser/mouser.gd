@@ -26,7 +26,7 @@ extends Cell
 @export var growth_per_nutrient: float = 1.1
 ## Speed multiplier while a nutrient's burst lasts. Only the top speed moves;
 ## the steering underneath is untouched, so it still just drifts at the cursor.
-@export var speed_burst: float = 1.5
+@export var speed_burst: float = 2.0
 ## How long that burst runs. Eating again refreshes it rather than stacking it.
 @export var burst_duration: float = 10.0
 
