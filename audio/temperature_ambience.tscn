@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://ctempambience01"]
+
+[ext_resource type="Script" path="res://audio/temperature_ambience.gd" id="1_amb"]
+[ext_resource type="AudioStream" uid="uid://pu021i1hh7hg" path="res://assets/sfx/sound-0-deg.wav" id="2_s0"]
+[ext_resource type="AudioStream" uid="uid://bayuv3eew04yf" path="res://assets/sfx/sound-30-deg.wav" id="3_s30"]
+[ext_resource type="AudioStream" uid="uid://bmk8y7lhnmtas" path="res://assets/sfx/sound-60-deg.wav" id="4_s60"]
+[ext_resource type="AudioStream" uid="uid://dtew14l027ef6" path="res://assets/sfx/sound-100-deg.wav" id="5_s100"]
+
+[node name="TemperatureAmbience" type="Node"]
+script = ExtResource("1_amb")
+
+[node name="Bed0" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_s0")
+volume_db = -80.0
+
+[node name="Bed30" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_s30")
+volume_db = -80.0
+
+[node name="Bed60" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_s60")
+volume_db = -80.0
+
+[node name="Bed100" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_s100")
+volume_db = -80.0

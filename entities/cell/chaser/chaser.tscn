@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://ykx3wqfx2epc" path="res://entities/cell/chaser/chaser.gd" id="1_gshbv"]
 [ext_resource type="Texture2D" uid="uid://c5o6175y4feos" path="res://assets/cells n stuff/IMG_2288.png" id="2_rmndm"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="22_shadow"]
+[ext_resource type="AudioStream" uid="uid://dvhpr4tqml4v3" path="res://assets/sfx/chaser-eat.wav" id="3_eat"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rmndm"]
 radius = 86.0
@@ -18,6 +19,7 @@ chase_multiplier = 6.0
 hunt_cooldown = 6.0
 min_speed = 20.0
 max_speed = 40.0
+eat_sound = ExtResource("3_eat")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1401065615]
 texture = ExtResource("2_rmndm")

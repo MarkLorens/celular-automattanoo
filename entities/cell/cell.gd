@@ -44,6 +44,12 @@ extends CharacterBody2D
 @export var spin_change_interval: float = 2.0
 @export var spin_smoothing: float = 2.0
 
+@export_group("Audio")
+## Played through the Audio pool when this cell makes a meal -- a predator taking
+## prey in try_eat(), or a prey species taking a nutrient in its own
+## on_nutrient_eaten(). Left null, eating is silent.
+@export var eat_sound: AudioStream
+
 @onready var sprite: Sprite2D = $Sprite2D
 
 ## Anything that merely drifts, i.e. everything a predator treats as food.
@@ -171,6 +177,9 @@ func try_eat(prey: Cell) -> bool:
 		_on_defended_prey(prey)
 		return false
 	prey.queue_free()
+	# self is the predator here, so this is the eater's sound -- chaser or mouser,
+	# each with its own clip. Only a meal that actually happened is heard.
+	Audio.play_sfx(eat_sound)
 	return true
 
 ## What a defended cell does to the predator that reached it. Dying on the spot
