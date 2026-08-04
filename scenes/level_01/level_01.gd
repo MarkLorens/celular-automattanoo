@@ -19,7 +19,7 @@ extends Node2D
 @export var temperature_gauge: ArcMeter
 @export var min_celsius: float = 0.0
 @export var max_celsius: float = 100.0
-@export var gauge_spawn_timing: float = 0
+@export var gauge_spawn_timing: float = 40.0
 
 @export_group("Lighting")
 ## Where the lamp hangs over the dish. Every shadow slides away from it.
@@ -32,6 +32,11 @@ extends Node2D
 @export var shadow_falloff: float = 0.012
 ## Cap, so cells out at the rim do not trail absurd shadows.
 @export var shadow_max_offset: float = 45.0
+
+# UI stuff
+@onready var HUD := $HUD
+@onready var game_timer := $HUD/GameTimer
+@onready var game_over_screen := $UI/GameOverScreen
 
 ## Fires whenever the player moves the gauge. The dish temperature in celsius.
 signal temperature_changed(celsius: float)
@@ -150,6 +155,8 @@ func _too_hot_for(colony: CellColony) -> bool:
 ## ignores echoes by default, so holding the key drops one nutrient, not a
 ## stream of them.
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("force_end_game"):
+		game_over()
 	if not event.is_action_pressed("spawn_nutrient"):
 		return
 	if _nutrient_ready_in > 0.0:
@@ -157,6 +164,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	_spawn_nutrient(get_global_mouse_position())
 	_nutrient_ready_in = nutrient_cooldown
 	get_viewport().set_input_as_handled()
+
+func game_over() -> void:
+	game_timer.stop()
+
+	# Freeze the dish behind the end screen. Pausing the tree stops every cell,
+	# spawn clock and the timer itself in one move; the end screen keeps running
+	# because its process_mode is set to run while paused, so Restart still works.
+	get_tree().paused = true
+
+	HUD.hide()
+	game_over_screen.show_result(game_timer.final_time)
 
 func _spawn_nutrient(at: Vector2) -> void:
 	if nutrient_scene == null:
