@@ -75,7 +75,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("3_x77vp")
 theme_override_font_sizes/font_size = 128
-text = "Game Over"
+text = "Gam3 Over"
 horizontal_alignment = 1
 vertical_alignment = 1
 
