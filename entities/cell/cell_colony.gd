@@ -9,6 +9,12 @@ extends Resource
 @export var count: int = 20
 ## Seconds between drip-fed extra cells. 0 for a fixed population.
 @export var spawn_interval: float = 0.0
+## Seconds before the first drip-fed cell arrives, which is how a species gets
+## introduced partway into a run rather than ticking from the off. Negative
+## means "however long spawn_interval is", the usual case -- keeping the two
+## apart only matters when a colony appears on one schedule and repeats on
+## another.
+@export var first_spawn_delay: float = -1.0
 ## Drip-feeding stops once the dish reaches this temperature. Only the automatic
 ## spawn is affected -- a species that breeds by some other route, as flockers do
 ## off nutrients, keeps doing so in the heat. Left above the gauge's ceiling the

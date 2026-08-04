@@ -38,6 +38,8 @@
 [ext_resource type="Texture2D" uid="uid://5tamuu2jpf1r" path="res://assets/cells n stuff/IMG_2293.png" id="31_cvnlr"]
 [ext_resource type="Texture2D" uid="uid://dosc8fh0uo6v3" path="res://assets/cells n stuff/IMG_2294.png" id="32_hy55k"]
 [ext_resource type="Texture2D" uid="uid://cfhbuwvkxh8mb" path="res://assets/temporary bg.png" id="36_ebkcc"]
+[ext_resource type="PackedScene" uid="uid://bld8b2qqfufbf" path="res://ui/game_timer/game_timer.tscn" id="38_xxgnw"]
+[ext_resource type="PackedScene" uid="uid://dbs8gm72u6v6u" path="res://ui/game_over_screen/game_over_screen.tscn" id="40_dlf0c"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -54,7 +56,8 @@ roam_radius = 1200.0
 script = ExtResource("2_colony")
 scene = ExtResource("4_ringer")
 count = 0
-spawn_interval = 40.0
+spawn_interval = 45.0
+first_spawn_delay = 40.0
 textures = Array[Texture2D]([ExtResource("15_5j87c"), ExtResource("16_ebkcc"), ExtResource("17_xxgnw"), ExtResource("18_dlf0c"), ExtResource("19_2lgdn"), ExtResource("20_b7nam"), ExtResource("21_2xhf7"), ExtResource("22_ve8qq"), ExtResource("23_fmtwj"), ExtResource("24_4lp0r")])
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
@@ -62,7 +65,7 @@ metadata/_custom_type_script = "uid://blj5aorppmxvy"
 script = ExtResource("2_colony")
 scene = ExtResource("8_xttg2")
 count = 2
-spawn_interval = 200.0
+spawn_interval = 30.0
 textures = Array[Texture2D]([ExtResource("26_nd6wt"), ExtResource("27_hr81f"), ExtResource("28_t5k3s"), ExtResource("29_2dj8j"), ExtResource("30_11gfn"), ExtResource("31_cvnlr"), ExtResource("32_hy55k")])
 spawn_center = Vector2(0, 500)
 roam_radius = 1200.0
@@ -71,18 +74,20 @@ metadata/_custom_type_script = "uid://blj5aorppmxvy"
 [sub_resource type="Resource" id="Resource_dfdfd"]
 script = ExtResource("2_colony")
 scene = ExtResource("8_7asd0")
-count = 0
+count = 1
 spawn_interval = 40.0
+first_spawn_delay = 40.0
 max_population = 1
 spawn_center = Vector2(0, -1200)
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
-[node name="Level01" type="Node2D" unique_id=592872825 node_paths=PackedStringArray("dish", "camera")]
+[node name="Level01" type="Node2D" unique_id=592872825 node_paths=PackedStringArray("dish", "camera", "temperature_gauge")]
 script = ExtResource("1_0y5gt")
 colonies = Array[ExtResource("2_colony")]([SubResource("Resource_flockers"), SubResource("Resource_5nkp2"), SubResource("Resource_7asd0"), SubResource("Resource_dfdfd")])
 dish = NodePath("PetriDish")
 camera = NodePath("Camera2D")
 nutrient_scene = ExtResource("10_nutri")
+temperature_gauge = NodePath("HUD/TemperatureGauge")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
 background = ExtResource("36_ebkcc")
@@ -94,4 +99,10 @@ script = ExtResource("8_n2h5k")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=744026996]
 
+[node name="GameTimer" parent="HUD" unique_id=70488729 instance=ExtResource("38_xxgnw")]
+
 [node name="TemperatureGauge" parent="HUD" unique_id=290152689 instance=ExtResource("30_hud")]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=969219461]
+
+[node name="GameOverScreen" parent="UI" unique_id=2093173003 instance=ExtResource("40_dlf0c")]

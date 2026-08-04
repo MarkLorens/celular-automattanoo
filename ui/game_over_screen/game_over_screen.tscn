@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://dbs8gm72u6v6u"]
+
+[ext_resource type="Script" uid="uid://bqq284a7qqbt3" path="res://ui/game_over_screen/game_over_screen.gd" id="1_bkcqb"]
+[ext_resource type="Shader" uid="uid://cjbnkfbdqin6v" path="res://ui/game_over_screen/blur.gdshader" id="2_blur"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = ExtResource("2_blur")
+shader_parameter/blur = 2.5
+shader_parameter/tint = Color(0.02, 0.03, 0.05, 0.45)
+
+[node name="GameOverScreen" type="Control" unique_id=2093173003]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bkcqb")
+
+[node name="Blur" type="ColorRect" parent="." unique_id=118820441]
+material = SubResource("ShaderMaterial_blur")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="CenterContainer" parent="." unique_id=771903622]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=402518896]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="Title" type="Label" parent="Center/VBox" unique_id=539951834]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Hehe kalah ya"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="Center/VBox" unique_id=644827155]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "0:00"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="Center/VBox" unique_id=915340722]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Restart"

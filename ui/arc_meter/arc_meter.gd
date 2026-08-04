@@ -17,7 +17,7 @@ signal value_changed(value: float)
 
 @export_group("Value")
 ## 0 is empty and entirely grey, 1 is full and entirely coloured.
-@export_range(0.0, 1.0, 0.001) var value: float = 0.0:
+@export_range(0.0, 1.0, 0.001) var value: float = 0.35:
 	set = set_value
 
 @export_group("Shape")

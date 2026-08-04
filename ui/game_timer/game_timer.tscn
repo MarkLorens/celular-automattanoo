@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bld8b2qqfufbf"]
+
+[ext_resource type="Script" uid="uid://cti2ipiibpwwi" path="res://ui/game_timer/game_timer.gd" id="1_kwb0e"]
+
+[node name="GameTimer" type="Control" unique_id=70488729]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(-32, 32)
+script = ExtResource("1_kwb0e")
+
+[node name="Label" type="Label" parent="." unique_id=38315916]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 23.0
+grow_horizontal = 0
+offset_transform_enabled = true
+theme_override_font_sizes/font_size = 64
