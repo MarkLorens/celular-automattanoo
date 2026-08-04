@@ -15,7 +15,7 @@
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
 scene = ExtResource("3_flocker")
-count = 5
+count = 1
 spawn_interval = 20.0
 textures = Array[Texture2D]([ExtResource("5_a03qe"), ExtResource("6_i3sbr")])
 spawn_center = Vector2(-1400, 0)
@@ -25,7 +25,7 @@ roam_radius = 1200.0
 [sub_resource type="Resource" id="Resource_5nkp2"]
 script = ExtResource("2_colony")
 scene = ExtResource("4_ringer")
-count = 50
+count = 0
 spawn_interval = 10.0
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 

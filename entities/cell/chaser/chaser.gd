@@ -59,6 +59,7 @@ func is_hunting() -> bool:
 	return prey != null
 
 func _steering(delta: float) -> Vector2:
+	_catch_touching()
 	_update_hunt(delta)
 
 	var boost: float = chase_multiplier if is_hunting() else 1.0
@@ -82,13 +83,8 @@ func _update_hunt(delta: float) -> void:
 		_end_hunt()  # Freed, or already claimed by another chaser, mid-chase.
 
 	if is_hunting():
-		if global_position.distance_to(prey.global_position) <= catch_radius:
-			# May kill this chaser instead, if the prey is defended. Nothing up
-			# to this point knows or cares -- the hunt is identical either way,
-			# which is what makes running onto a poisonous ringer possible.
-			try_eat(prey)
-			_end_hunt()  # Eating costs the same breather as giving up does.
-			return
+		# The catch itself is not here any more -- _catch_touching() does it, for
+		# anything the chaser is touching rather than only what it is chasing.
 		# Deliberately not re-reading the sensor here: the chaser commits for
 		# the whole burst, so prey skimming the sensor edge cannot flicker the
 		# hunt on and off, and prey that escapes still gets chased to the end.
@@ -111,6 +107,61 @@ func _end_hunt() -> void:
 	prey = null
 	_hunt_remaining = 0.0
 	_cooldown_remaining = hunt_cooldown
+
+## Anything that ends up inside the chaser is eaten, hunting or not. The lunge
+## is how the chaser tries to make contact happen -- it was never the only way
+## contact happens, and one drifting straight through a floater while it rests
+## should not come out the other side politely.
+##
+## try_eat() is what resolves it, so a defended ringer kills the chaser here
+## exactly as it would at the end of a hunt.
+func _catch_touching() -> void:
+	for body in sensor.get_overlapping_bodies():
+		var candidate := body as Cell
+		if not is_edible(candidate):
+			continue
+		if global_position.distance_to(candidate.global_position) > catch_radius:
+			continue
+		var was_target: bool = candidate == prey
+		if not try_eat(candidate):
+			return  # That one was defended, and it just killed us.
+		# Catching what it was actually after costs the usual breather. A meal
+		# that simply wandered into it does not call the hunt off.
+		if was_target:
+			_end_hunt()
+		return  # One mouthful per frame.
+
+## A nutrient throws the chaser straight at whatever is nearest. It arrives on
+## top of it, which the very next contact check turns into a kill -- or into the
+## chaser's own death, when what it landed on is an armed ringer. The snap does
+## not look before it leaps.
+##
+## Nearest anywhere rather than nearest in the sensor: a snap is not the chaser
+## noticing something, it is the nutrient putting it there, and food that found
+## nothing in sensor range would just look like it did nothing at all.
+func on_nutrient_eaten() -> bool:
+	var target: Cell = _nearest_floater_anywhere()
+	if target == null:
+		return true  # Nothing left alive to snap to; the food is eaten anyway.
+	global_position = target.global_position
+	prey = target
+	_hunt_remaining = hunt_duration
+	_cooldown_remaining = 0.0
+	return true
+
+## Nearest edible cell in the whole dish, sensor be damned. See on_nutrient_eaten().
+func _nearest_floater_anywhere() -> Cell:
+	var nearest: Cell = null
+	var nearest_distance: float = INF
+	for node in get_tree().get_nodes_in_group(FLOATER_GROUP):
+		var candidate := node as Cell
+		if not is_edible(candidate):
+			continue
+		var distance: float = global_position.distance_squared_to(candidate.global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest = candidate
+	return nearest
 
 ## Nearest cell in the sensor that counts as food, or null if there is none.
 ## Picking the nearest means a chaser in the middle of a shoal lunges at
