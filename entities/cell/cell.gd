@@ -34,6 +34,9 @@ extends CharacterBody2D
 ## Soft leash so a colony never disappears off the map. 0 turns it off.
 @export var roam_radius: float = 1200.0
 @export var roam_center: Vector2 = Vector2.ZERO
+## Shape of the leash. roam_radius is the horizontal reach and this scales it
+## per axis, so an oval dish holds its cells in an oval. (1, 1) is a circle.
+@export var roam_scale: Vector2 = Vector2.ONE
 @export var containment_weight: float = 2.5
 
 @export_group("Funny Rotate")
@@ -219,10 +222,19 @@ func _wander_steering(delta: float) -> Vector2:
 func _containment_steering() -> Vector2:
 	if roam_radius <= 0.0:
 		return Vector2.ZERO
-	var to_center: Vector2 = roam_center - global_position
-	if to_center.length() < roam_radius:
+	# Measured in leash-widths rather than pixels: squash the space by the leash
+	# radii first and an oval boundary becomes a circular test again. Past 1 is
+	# outside, whatever shape the dish happens to be.
+	if ((global_position - roam_center) / roam_reach()).length() < 1.0:
 		return Vector2.ZERO
-	return _steer_toward(to_center)
+	return _steer_toward(roam_center - global_position)
+
+## The leash's two radii. Guarded against a zero axis, which would otherwise
+## divide by zero and leave every cell permanently "outside".
+func roam_reach() -> Vector2:
+	return Vector2(
+		maxf(roam_scale.x, 0.001) * roam_radius,
+		maxf(roam_scale.y, 0.001) * roam_radius)
 
 ## Reynolds steering: the force that bends our current velocity toward the desired one.
 func _steer_toward(direction: Vector2) -> Vector2:

@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dga5bwfx8x0" path="res://entities/cell/chaser/chaser.tscn" id="8_xttg2"]
 [ext_resource type="PackedScene" uid="uid://cuexd1ww4bsar" path="res://entities/dish/petri_dish.tscn" id="9_dish"]
 [ext_resource type="PackedScene" uid="uid://depdw7v8tqpoj" path="res://entities/nutrient/nutrient.tscn" id="10_nutri"]
+[ext_resource type="PackedScene" path="res://ui/arc_meter/arc_meter.tscn" id="30_hud"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -20,7 +21,6 @@ spawn_interval = 20.0
 textures = Array[Texture2D]([ExtResource("5_a03qe"), ExtResource("6_i3sbr")])
 spawn_center = Vector2(-1400, 0)
 spawn_radius = 500.0
-roam_radius = 1200.0
 
 [sub_resource type="Resource" id="Resource_5nkp2"]
 script = ExtResource("2_colony")
@@ -35,7 +35,6 @@ scene = ExtResource("8_xttg2")
 count = 2
 spawn_interval = 30.0
 spawn_center = Vector2(0, 500)
-roam_radius = 1200.0
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
 [sub_resource type="Resource" id="Resource_dfdfd"]
@@ -55,9 +54,14 @@ camera = NodePath("Camera2D")
 nutrient_scene = ExtResource("10_nutri")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
-radius = 2500.0
+radius = 1700.0
+vertical_ratio = 0.73
 rim_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=371371534]
 zoom = Vector2(0.4, 0.4)
 script = ExtResource("8_n2h5k")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="TemperatureGauge" parent="HUD" instance=ExtResource("30_hud")]
