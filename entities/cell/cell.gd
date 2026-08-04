@@ -156,6 +156,21 @@ static func is_edible(cell) -> bool:
 func on_nutrient_eaten() -> bool:
 	return true
 
+
+## How fast this cell's colony should be drip-feeding right now, as a multiple
+## of the interval its CellColony asks for. 1 is that plain pace, 2 twice as
+## quick. Species whose breeding answers to something -- the dish temperature,
+## a recent meal -- override this; for everyone else the colony simply keeps to
+## its own clock.
+##
+## The level asks one living member and takes its word for the colony, since the
+## drip feed is a single clock for the whole species rather than something each
+## cell runs a copy of. An override that varies cell to cell would therefore be
+## read as whichever member happened to answer, so a species wanting one should
+## share the state behind it rather than carrying it per cell.
+func breeding_rate() -> float:
+	return 1.0
+
 ## Whether a predator that tries to eat this cell dies for the attempt. Species
 ## that can put up a defence override it; nothing is defended by default.
 ##
