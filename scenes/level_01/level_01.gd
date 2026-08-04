@@ -71,6 +71,11 @@ func _ready() -> void:
 				break  # count overshooting max_population is the cap's problem.
 			_spawn_cell(i)
 
+	# Boot frozen behind the title card. The dish is fully set up and rendered but
+	# nothing moves; the start screen (which runs while paused) lifts this the
+	# moment the player presses to begin, and every clock starts from here.
+	get_tree().paused = true
+
 ## Keeps the gauge hidden and untouchable until the dish has had time to settle.
 ##
 ## The wait lives in its own function rather than in _ready() on purpose. `await`
@@ -87,7 +92,10 @@ func _reveal_gauge_later() -> void:
 		return
 	temperature_gauge.hide()
 	temperature_gauge.process_mode = Node.PROCESS_MODE_DISABLED
-	await get_tree().create_timer(gauge_spawn_timing).timeout
+	# process_always = false so the wait counts real play time only: the clock is
+	# started during boot but holds while the title card has the game paused, and
+	# resumes once the player begins. Otherwise it would tick down behind the card.
+	await get_tree().create_timer(gauge_spawn_timing, false).timeout
 	if not is_instance_valid(temperature_gauge):
 		return  # Level torn down while the timer was running.
 	temperature_gauge.show()

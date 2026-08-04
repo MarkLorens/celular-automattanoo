@@ -1,7 +1,7 @@
 extends Control
 
 @onready var time_label: Label = $Center/VBox/TimeLabel
-@onready var restart_button: Button = $Center/VBox/RestartButton
+@onready var restart_button: Button = $Center/VBox/RetryButton
 
 
 func _ready() -> void:
@@ -29,8 +29,12 @@ func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
 
 
-## mm:ss, so a long run reads as 2:05 rather than a bare 125.
+## MM:SS:CC (minutes : seconds : hundredths), the readout the end screen shows.
+## Everything is derived from one rounded hundredths count so the centiseconds
+## can never round up to 100 and leave the seconds column a step behind.
 func _format_time(seconds: float) -> String:
-	#var whole: int = int(seconds)
-	#return "%d:%02d" % [whole / 60, whole % 60]
-	return "%.2f s" % seconds
+	var total_cents: int = int(round(seconds * 100.0))
+	var minutes: int = total_cents / 6000
+	var secs: int = (total_cents / 100) % 60
+	var cents: int = total_cents % 100
+	return "%02d:%02d:%02d" % [minutes, secs, cents]

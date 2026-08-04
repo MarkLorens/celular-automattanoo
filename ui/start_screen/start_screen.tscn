@@ -1,0 +1,162 @@
+[gd_scene format=3 uid="uid://dtxexl8ai5xrf"]
+
+[ext_resource type="Script" uid="uid://dfff4f3efo8ew" path="res://ui/start_screen/start_screen.gd" id="1_start"]
+[ext_resource type="Shader" uid="uid://cjbnkfbdqin6v" path="res://ui/game_over_screen/blur.gdshader" id="2_blur"]
+[ext_resource type="FontFile" uid="uid://csd1bcf6n676b" path="res://assets/fonts/SourceCodePro-Bold.ttf" id="3_dqv2i"]
+[ext_resource type="FontFile" uid="uid://cmw3u0nijqqje" path="res://assets/fonts/SourceCodePro-Light.ttf" id="4_tpdyo"]
+[ext_resource type="FontFile" uid="uid://c4xch3knqlaqf" path="res://assets/fonts/SourceCodePro-Regular.ttf" id="5_gkc7f"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = ExtResource("2_blur")
+shader_parameter/blur = 2.5
+shader_parameter/tint = Color(0.02, 0.03, 0.05, 0.35)
+
+[node name="StartScreen" type="Control" unique_id=1525878770]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_start")
+
+[node name="Blur" type="ColorRect" parent="." unique_id=1615695498]
+material = SubResource("ShaderMaterial_blur")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="." unique_id=713430041]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=1821651799]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Center/VBox" unique_id=896790989]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("3_dqv2i")
+theme_override_font_sizes/font_size = 72
+text = "ORDER IS TEMPORARY"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/VBox" unique_id=1112112279]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
+theme_override_fonts/font = ExtResource("4_tpdyo")
+theme_override_font_sizes/font_size = 34
+text = "MAINTAIN BALANCE IN A CONSTANTLY SHIFTING ECOSYSTEM."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/VBox" unique_id=848559195]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Body" type="Label" parent="Center/VBox" unique_id=1549025716]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 0.9)
+theme_override_constants/line_spacing = 8
+theme_override_fonts/font = ExtResource("5_gkc7f")
+theme_override_font_sizes/font_size = 32
+text = "Prevent collapse.
+Resist monoculture.
+Adapt as the ecosystem evolves."
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="Center/VBox" unique_id=309386978]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Hint" type="Label" parent="Center/VBox" unique_id=1159895842]
+modulate = Color(1, 1, 1, 0.6)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "PRESS ANYWHERE TO BEGIN"
+horizontal_alignment = 1
+
+[node name="TopLeft" type="Label" parent="." unique_id=1412451936]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+offset_left = 40.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 60.0
+theme_override_fonts/font = ExtResource("5_gkc7f")
+theme_override_font_sizes/font_size = 22
+text = "GAMJAMJAM // 2026"
+
+[node name="BottomRight" type="Label" parent="." unique_id=497605753]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -60.0
+offset_right = -40.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("5_gkc7f")
+theme_override_font_sizes/font_size = 22
+text = "D // VI // 01"
+horizontal_alignment = 2
+
+[node name="TopRight" type="Label" parent="." unique_id=1629498688]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.2
+offset_left = -190.0
+offset_top = -20.0
+offset_right = 110.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 1.5707963
+pivot_offset = Vector2(150, 20)
+theme_override_fonts/font = ExtResource("5_gkc7f")
+theme_override_font_sizes/font_size = 22
+text = "M // CI // 02"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomLeft" type="Label" parent="." unique_id=1392462666]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.8
+anchor_bottom = 0.8
+offset_left = -110.0
+offset_top = -20.0
+offset_right = 190.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5707963
+pivot_offset = Vector2(150, 20)
+theme_override_fonts/font = ExtResource("5_gkc7f")
+theme_override_font_sizes/font_size = 22
+text = "A // GD // 03"
+horizontal_alignment = 1
+vertical_alignment = 1
