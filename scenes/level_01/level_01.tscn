@@ -40,6 +40,7 @@
 [ext_resource type="Texture2D" uid="uid://cfhbuwvkxh8mb" path="res://assets/temporary bg.png" id="36_ebkcc"]
 [ext_resource type="PackedScene" uid="uid://bld8b2qqfufbf" path="res://ui/game_timer/game_timer.tscn" id="38_xxgnw"]
 [ext_resource type="PackedScene" uid="uid://dbs8gm72u6v6u" path="res://ui/game_over_screen/game_over_screen.tscn" id="40_dlf0c"]
+[ext_resource type="PackedScene" uid="uid://c0start0screen0" path="res://ui/start_screen/start_screen.tscn" id="41_start"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -106,3 +107,5 @@ script = ExtResource("8_n2h5k")
 [node name="UI" type="CanvasLayer" parent="." unique_id=969219461]
 
 [node name="GameOverScreen" parent="UI" unique_id=2093173003 instance=ExtResource("40_dlf0c")]
+
+[node name="StartScreen" parent="UI" unique_id=1662091487 instance=ExtResource("41_start")]
