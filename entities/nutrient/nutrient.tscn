@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://depdw7v8tqpoj"]
 
 [ext_resource type="Script" uid="uid://dhn4l5r1hc7vm" path="res://entities/nutrient/nutrient.gd" id="1_e8x1k"]
-[ext_resource type="Texture2D" uid="uid://b2tk82pjaa6fy" path="res://assets/temporary_assets/Player_Resized.png" id="1_poy5k"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="24_shadow"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_e8x1k"]
+load_path = "res://.godot/imported/IMG_2297.png-ffefef2648a9357fe2684317d5e14076.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e8x1k"]
 size = Vector2(42, 110)
@@ -14,10 +16,10 @@ script = ExtResource("1_e8x1k")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=969994309]
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("1_poy5k")
+texture = SubResource("CompressedTexture2D_e8x1k")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=470680671]
 position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_e8x1k")
 
-[node name="Shadow" parent="." instance=ExtResource("24_shadow")]
+[node name="Shadow" parent="." unique_id=170333087 instance=ExtResource("24_shadow")]

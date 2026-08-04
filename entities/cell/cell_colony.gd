@@ -28,6 +28,17 @@ extends Resource
 ## Picked at random per cell. Leave empty to keep whatever the scene ships with.
 @export var textures: Array[Texture2D] = []
 
+@export_group("Summoning")
+## Input action that drops one of these at the cursor on demand, the same way the
+## nutrient works. Empty means this colony cannot be summoned -- it only ever
+## arrives on its own drip-feed clock. Naming an action is all it takes to make a
+## species player-summonable; the level wires the rest.
+@export var summon_action: StringName = &""
+## Seconds of play before the summon unlocks. 0 makes it available from the off.
+@export var summon_unlock_at: float = 0.0
+## Seconds between summons once unlocked.
+@export var summon_cooldown: float = 0.0
+
 @export_group("Placement")
 ## Scatter this colony across the whole dish rather than the patch below. On by
 ## default: a colony is a species, not a territory, so prey and predator alike

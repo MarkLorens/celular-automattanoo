@@ -44,6 +44,10 @@ signal value_changed(value: float)
 @export var fill_gradient: Gradient
 ## What an unfilled stretch of bar looks like.
 @export var empty_color: Color = Color(0.22, 0.23, 0.27, 0.9)
+## Worn by the whole meter while it is locked, so a not-yet-unlocked gauge reads
+## as greyed-out rather than vanishing. Its own colour, dimmer than empty_color,
+## since a locked meter is off entirely rather than merely unfilled.
+@export var locked_color: Color = Color(0.28, 0.29, 0.34, 0.6)
 
 @export_group("Input")
 ## How far either side of the bar still counts as grabbing it, so the meter does
@@ -51,11 +55,24 @@ signal value_changed(value: float)
 @export var grab_padding: float = 26.0
 
 var _dragging: bool = false
+# While locked the meter is drawn all-grey and refuses input; the level lifts it
+# once enough play time has passed.
+var _locked: bool = false
 
 func _ready() -> void:
 	if fill_gradient == null:
 		fill_gradient = _default_gradient()
 	set_process(false)
+
+## Greys the meter and stops it answering the mouse (locked), or restores it
+## (unlocked). Used in place of hiding it, so a gauge the player has not earned
+## yet still sits in its spot, plainly switched off.
+func set_locked(locked: bool) -> void:
+	if locked == _locked:
+		return
+	_locked = locked
+	mouse_filter = Control.MOUSE_FILTER_IGNORE if locked else Control.MOUSE_FILTER_STOP
+	queue_redraw()
 
 func set_value(new_value: float) -> void:
 	var clamped: float = clampf(new_value, 0.0, 1.0)
@@ -83,7 +100,10 @@ func _draw() -> void:
 			# carries across the gaps.
 			var along: float = (angle - start) / span
 			points.append(arc_center + Vector2.RIGHT.rotated(angle) * radius)
-			colors.append(fill_gradient.sample(along) if along <= value else empty_color)
+			if _locked:
+				colors.append(locked_color)
+			else:
+				colors.append(fill_gradient.sample(along) if along <= value else empty_color)
 		draw_polyline_colors(points, colors, thickness, true)
 
 ## Restricts the control's hit area to the bars themselves. Without this the

@@ -41,6 +41,8 @@
 [ext_resource type="PackedScene" uid="uid://bld8b2qqfufbf" path="res://ui/game_timer/game_timer.tscn" id="38_xxgnw"]
 [ext_resource type="PackedScene" uid="uid://dbs8gm72u6v6u" path="res://ui/game_over_screen/game_over_screen.tscn" id="40_dlf0c"]
 [ext_resource type="PackedScene" uid="uid://dtxexl8ai5xrf" path="res://ui/start_screen/start_screen.tscn" id="41_start"]
+[ext_resource type="PackedScene" uid="uid://c8abilitycapsule" path="res://ui/ability_capsule/ability_capsule.tscn" id="42_capsule"]
+[ext_resource type="Texture2D" uid="uid://cu7vpb3komgfa" path="res://assets/cells n stuff/IMG_2297.png" id="43_img2297"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -60,6 +62,9 @@ count = 0
 spawn_interval = 45.0
 first_spawn_delay = 40.0
 textures = Array[Texture2D]([ExtResource("15_5j87c"), ExtResource("16_ebkcc"), ExtResource("17_xxgnw"), ExtResource("18_dlf0c"), ExtResource("19_2lgdn"), ExtResource("20_b7nam"), ExtResource("21_2xhf7"), ExtResource("22_ve8qq"), ExtResource("23_fmtwj"), ExtResource("24_4lp0r")])
+summon_action = &"spawn_ringer"
+summon_unlock_at = 40.0
+summon_cooldown = 60.0
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
 [sub_resource type="Resource" id="Resource_7asd0"]
@@ -68,6 +73,8 @@ scene = ExtResource("8_xttg2")
 count = 2
 spawn_interval = 30.0
 textures = Array[Texture2D]([ExtResource("26_nd6wt"), ExtResource("27_hr81f"), ExtResource("28_t5k3s"), ExtResource("29_2dj8j"), ExtResource("30_11gfn"), ExtResource("31_cvnlr"), ExtResource("32_hy55k")])
+summon_action = &"spawn_chaser"
+summon_cooldown = 90.0
 spawn_center = Vector2(0, 500)
 roam_radius = 1200.0
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
@@ -103,6 +110,39 @@ script = ExtResource("8_n2h5k")
 [node name="GameTimer" parent="HUD" unique_id=70488729 instance=ExtResource("38_xxgnw")]
 
 [node name="TemperatureGauge" parent="HUD" unique_id=290152689 instance=ExtResource("30_hud")]
+
+[node name="CapsuleZ" parent="HUD" instance=ExtResource("42_capsule")]
+offset_left = 1732.0
+offset_top = 185.0
+offset_right = 1828.0
+offset_bottom = 415.0
+pivot_offset = Vector2(48, 115)
+rotation = -0.5
+action = &"spawn_nutrient"
+letter = "Z"
+image = ExtResource("43_img2297")
+
+[node name="CapsuleX" parent="HUD" instance=ExtResource("42_capsule")]
+offset_left = 1792.0
+offset_top = 430.0
+offset_right = 1888.0
+offset_bottom = 660.0
+pivot_offset = Vector2(48, 115)
+rotation = 0.0
+action = &"spawn_chaser"
+letter = "X"
+image = ExtResource("26_nd6wt")
+
+[node name="CapsuleC" parent="HUD" instance=ExtResource("42_capsule")]
+offset_left = 1737.0
+offset_top = 675.0
+offset_right = 1833.0
+offset_bottom = 905.0
+pivot_offset = Vector2(48, 115)
+rotation = 0.5
+action = &"spawn_ringer"
+letter = "C"
+image = ExtResource("16_ebkcc")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=969219461]
 
