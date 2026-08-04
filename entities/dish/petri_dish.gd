@@ -38,6 +38,12 @@ extends Node2D
 		_rebuild()
 
 @export_group("Look")
+@export var background: Texture2D:
+	set(value):
+		background = value
+		queue_redraw()
+## Flat fill used when there is no background texture. The texture, when there
+## is one, is drawn untinted -- this is the fallback, not a modulate.
 @export var medium_color: Color = Color(0.09, 0.13, 0.13):
 	set(value):
 		medium_color = value
@@ -80,8 +86,15 @@ func _draw() -> void:
 	# radius, so the medium becomes a filled polygon and the rings become closed
 	# polylines around it.
 	var outer: Vector2 = radii()
-	draw_colored_polygon(_oval(outer, wall_segments * 2), medium_color)
-	draw_polyline(_ring(outer - Vector2(rim_width, rim_width) * 1.0),
+	 # draw_colored_polygon is the whole trick: hand it UVs and a texture and it
+  # fills the oval with the image, clipped to the shape, in one call. No
+  # viewport, no mask, no shader.
+	var medium: PackedVector2Array = _oval(outer, wall_segments * 2)
+	if background == null:
+		draw_colored_polygon(medium, medium_color)
+	else:
+		draw_colored_polygon(medium, Color.WHITE, _cover_uvs(medium, outer), background)
+		draw_polyline(_ring(outer - Vector2(rim_width, rim_width) * 1.0),
 		meniscus_color, rim_width * 1.5, true)
 	draw_polyline(_ring(outer - Vector2(rim_width, rim_width) * 0.5),
 		rim_color, rim_width, true)
@@ -99,3 +112,20 @@ func _ring(of_radii: Vector2) -> PackedVector2Array:
 	var points: PackedVector2Array = _oval(of_radii, wall_segments * 2)
 	points.append(points[0])
 	return points
+
+## UVs that make the background cover the oval without distorting it: centred,
+## then scaled until it fills the bounding box, cropping whichever axis
+## overflows. Mapping the box straight to 0..1 instead would squash a 16:9 image
+## into the dish's 1.37:1 oval.
+func _cover_uvs(points: PackedVector2Array, of_radii: Vector2) -> PackedVector2Array:
+	var source: Vector2 = background.get_size()
+	if source.x <= 0.0 or source.y <= 0.0:
+		return PackedVector2Array()
+	var box: Vector2 = of_radii * 2.0
+	var shown: Vector2 = source * maxf(box.x / source.x, box.y / source.y)
+	var uvs := PackedVector2Array()
+	for point in points:
+		# Points are centred on the origin, so 0.5 puts the middle of the image
+		# at the middle of the dish.
+		uvs.append(Vector2(0.5, 0.5) + point / shown)
+	return uvs

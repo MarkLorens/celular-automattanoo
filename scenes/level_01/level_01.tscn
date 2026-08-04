@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" path="res://ui/arc_meter/arc_meter.tscn" id="30_hud"]
 [ext_resource type="Texture2D" uid="uid://5tamuu2jpf1r" path="res://assets/cells n stuff/IMG_2293.png" id="31_cvnlr"]
 [ext_resource type="Texture2D" uid="uid://dosc8fh0uo6v3" path="res://assets/cells n stuff/IMG_2294.png" id="32_hy55k"]
+[ext_resource type="Texture2D" uid="uid://cfhbuwvkxh8mb" path="res://assets/temporary bg.png" id="36_ebkcc"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -83,6 +84,7 @@ camera = NodePath("Camera2D")
 nutrient_scene = ExtResource("10_nutri")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
+background = ExtResource("36_ebkcc")
 rim_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=371371534]
