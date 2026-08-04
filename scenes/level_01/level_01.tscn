@@ -37,10 +37,10 @@
 [ext_resource type="PackedScene" path="res://ui/arc_meter/arc_meter.tscn" id="30_hud"]
 [ext_resource type="Texture2D" uid="uid://5tamuu2jpf1r" path="res://assets/cells n stuff/IMG_2293.png" id="31_cvnlr"]
 [ext_resource type="Texture2D" uid="uid://dosc8fh0uo6v3" path="res://assets/cells n stuff/IMG_2294.png" id="32_hy55k"]
-[ext_resource type="Texture2D" uid="uid://cfhbuwvkxh8mb" path="res://assets/temporary bg.png" id="36_ebkcc"]
+[ext_resource type="Texture2D" uid="uid://d4c1ysfuvarbu" path="res://assets/main_background.png" id="36_2lgdn"]
 [ext_resource type="PackedScene" uid="uid://bld8b2qqfufbf" path="res://ui/game_timer/game_timer.tscn" id="38_xxgnw"]
 [ext_resource type="PackedScene" uid="uid://dbs8gm72u6v6u" path="res://ui/game_over_screen/game_over_screen.tscn" id="40_dlf0c"]
-[ext_resource type="PackedScene" uid="uid://c0start0screen0" path="res://ui/start_screen/start_screen.tscn" id="41_start"]
+[ext_resource type="PackedScene" uid="uid://dtxexl8ai5xrf" path="res://ui/start_screen/start_screen.tscn" id="41_start"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -91,7 +91,7 @@ nutrient_scene = ExtResource("10_nutri")
 temperature_gauge = NodePath("HUD/TemperatureGauge")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
-background = ExtResource("36_ebkcc")
+background = ExtResource("36_2lgdn")
 rim_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=371371534]

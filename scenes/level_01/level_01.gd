@@ -11,7 +11,7 @@ extends Node2D
 @export var nutrient_scene: PackedScene
 ## Seconds the player waits between drops. Doubles as the real cap on how fast
 ## flockers can breed, since a nutrient is what buys a new one.
-@export var nutrient_cooldown: float = 10.0
+@export var nutrient_cooldown: float = 30.0
 
 @export_group("Temperature")
 ## The gauge the player drags. Its 0..1 fill is read as a temperature between

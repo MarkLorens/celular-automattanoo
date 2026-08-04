@@ -1,0 +1,161 @@
+[gd_scene format=3 uid="uid://dx7q88vq4btni"]
+
+[ext_resource type="Script" path="res://ui/main_menu/main_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" uid="uid://d4c1ysfuvarbu" path="res://assets/main_background.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://cyewmaqk14bp7" path="res://assets/ui_stuff/EntropyLogo.webp" id="3_logo"]
+[ext_resource type="FontFile" uid="uid://c4xch3knqlaqf" path="res://assets/fonts/SourceCodePro-Regular.ttf" id="4_reg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_start_normal"]
+bg_color = Color(0.1, 0.08, 0.1, 0.5)
+corner_radius_top_left = 34
+corner_radius_top_right = 34
+corner_radius_bottom_right = 34
+corner_radius_bottom_left = 34
+content_margin_left = 44.0
+content_margin_top = 16.0
+content_margin_right = 44.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_start_hover"]
+bg_color = Color(0.16, 0.13, 0.16, 0.62)
+corner_radius_top_left = 34
+corner_radius_top_right = 34
+corner_radius_bottom_right = 34
+corner_radius_bottom_left = 34
+content_margin_left = 44.0
+content_margin_top = 16.0
+content_margin_right = 44.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBox_start_focus"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+mouse_filter = 2
+
+[node name="Logo" type="TextureRect" parent="Center/VBox"]
+custom_minimum_size = Vector2(960, 271)
+layout_mode = 2
+texture = ExtResource("3_logo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StartButton" type="Button" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 0.85)
+theme_override_fonts/font = ExtResource("4_reg")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBox_start_normal")
+theme_override_styles/hover = SubResource("StyleBox_start_hover")
+theme_override_styles/pressed = SubResource("StyleBox_start_normal")
+theme_override_styles/focus = SubResource("StyleBox_start_focus")
+text = "click to start"
+
+[node name="TopLeft" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+offset_left = 40.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 60.0
+theme_override_fonts/font = ExtResource("4_reg")
+theme_override_font_sizes/font_size = 22
+text = "GAMJAMJAM // 2026"
+mouse_filter = 2
+
+[node name="BottomRight" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -60.0
+offset_right = -40.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("4_reg")
+theme_override_font_sizes/font_size = 22
+text = "D // VI // 01"
+horizontal_alignment = 2
+mouse_filter = 2
+
+[node name="TopRight" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.2
+offset_left = -190.0
+offset_top = -20.0
+offset_right = 110.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(150, 20)
+rotation = 1.5707963
+theme_override_fonts/font = ExtResource("4_reg")
+theme_override_font_sizes/font_size = 22
+text = "M // CI // 02"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
+[node name="BottomLeft" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 1
+anchor_top = 0.8
+anchor_bottom = 0.8
+offset_left = -110.0
+offset_top = -20.0
+offset_right = 190.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(150, 20)
+rotation = -1.5707963
+theme_override_fonts/font = ExtResource("4_reg")
+theme_override_font_sizes/font_size = 22
+text = "A // GD // 03"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
