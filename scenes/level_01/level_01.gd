@@ -19,6 +19,7 @@ extends Node2D
 @export var temperature_gauge: ArcMeter
 @export var min_celsius: float = 0.0
 @export var max_celsius: float = 100.0
+@export var gauge_spawn_timing: float = 0
 
 @export_group("Lighting")
 ## Where the lamp hangs over the dish. Every shadow slides away from it.
@@ -53,9 +54,10 @@ func _ready() -> void:
 	_wire_temperature()
 	_apply_shadow_lighting()
 	_fit_camera_to_dish()
+	_reveal_gauge_later()
 	for i in colonies.size():
 		var colony: CellColony = colonies[i]
-		_time_until_spawn.append(colony.spawn_interval if colony != null else 0.0)
+		_time_until_spawn.append(_first_delay_for(colony))
 		_alive.append([])
 		if colony == null:
 			continue
@@ -63,6 +65,38 @@ func _ready() -> void:
 			if _at_cap(i):
 				break  # count overshooting max_population is the cap's problem.
 			_spawn_cell(i)
+
+## Keeps the gauge hidden and untouchable until the dish has had time to settle.
+##
+## The wait lives in its own function rather than in _ready() on purpose. `await`
+## suspends whatever function it sits in, so an await partway through _ready()
+## stops everything below it from running until the timer fires -- which put the
+## entire colony setup behind the delay. _time_until_spawn and _alive stayed
+## empty while _process was already indexing them, giving an out-of-bounds error
+## every single frame and not one cell spawned for the whole wait.
+##
+## Called without awaiting it, this runs as far as its own await and hands
+## control straight back, so _ready() carries on as normal.
+func _reveal_gauge_later() -> void:
+	if temperature_gauge == null or gauge_spawn_timing <= 0.0:
+		return
+	temperature_gauge.hide()
+	temperature_gauge.process_mode = Node.PROCESS_MODE_DISABLED
+	await get_tree().create_timer(gauge_spawn_timing).timeout
+	if not is_instance_valid(temperature_gauge):
+		return  # Level torn down while the timer was running.
+	temperature_gauge.show()
+	temperature_gauge.process_mode = Node.PROCESS_MODE_INHERIT
+
+## How long this colony waits for its first drip-fed cell. Only the opening wait
+## differs; every spawn after it is spawn_interval apart, which is why the timer
+## is reset from the interval rather than from here once it has fired.
+func _first_delay_for(colony: CellColony) -> float:
+	if colony == null:
+		return 0.0
+	if colony.first_spawn_delay >= 0.0:
+		return colony.first_spawn_delay
+	return colony.spawn_interval
 
 ## Shadows read the lamp off statics, so the whole dish agrees on one light
 ## without every cell having to carry a reference to it. Set before anything
