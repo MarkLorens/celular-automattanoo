@@ -56,6 +56,10 @@ extends Node2D
 	get_node_or_null(^"HUD/CapsuleX"),
 	get_node_or_null(^"HUD/CapsuleC"),
 ]
+# Owns the pause key, on its own node so it keeps hearing input while the tree is
+# frozen. Softly fetched like everything else here, so a level laid out without
+# one still runs -- it simply cannot be paused.
+@onready var _pause_key: Node = get_node_or_null(^"PauseKey")
 
 ## Fires whenever the player moves the gauge. The dish temperature in celsius.
 signal temperature_changed(celsius: float)
@@ -86,8 +90,12 @@ var _abilities: Array = []
 var _ability_by_action: Dictionary = {}
 # Seconds of actual play. _process only ticks while unpaused, so this never
 # advances behind the title card or the end screen -- it is gameplay time, which
-# is what the ability unlocks are measured in.
+# is what the ability unlocks are measured in. It doubles as the test for whether
+# a run has begun at all, which is what the pause key reads.
 var _elapsed: float = 0.0
+# Set once the run has ended, so it can only end once and so the pause key knows
+# there is nothing left to pause.
+var _over: bool = false
 
 # Index-aligned with colonies: each species grows on its own clock.
 var _time_until_spawn: Array[float] = []
@@ -103,6 +111,8 @@ func _ready() -> void:
 	_fit_camera_to_dish()
 	_reveal_gauge_later()
 	_build_abilities()
+	if _pause_key != null:
+		_pause_key.pressed.connect(_toggle_pause)
 	# Idempotent: coming in from the menu the track is already playing and this
 	# leaves it untouched; after a retry it brings the stopped track back.
 	Audio.play_music()
@@ -237,8 +247,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("force_end_game"):
 		game_over()
 		return
-	if event.is_action_pressed("pause_game"):
-		get_tree().paused = !get_tree().paused
 	for ability in _abilities:
 		if event.is_action_pressed(ability.action):
 			_try_use_ability(ability)
@@ -256,7 +264,26 @@ func _try_use_ability(ability: SpawnAbility) -> void:
 	ability.ready_in = ability.cooldown
 	get_viewport().set_input_as_handled()
 
+## Holds the run and lets it go again -- but only a run that is actually under
+## way. The tree is paused behind the title card and behind the end screen too,
+## and lifting either of those with the pause key would drop the player into a
+## game they had not started, or back into one that was already finished.
+##
+## _elapsed is what tells them apart: it only advances on unpaused frames, so a
+## zero reading means the title card is still up and nothing has begun.
+func _toggle_pause() -> void:
+	if _over or _elapsed <= 0.0:
+		return
+	get_tree().paused = not get_tree().paused
+
+
+## Ends the run. Idempotent, and it has to be: three separate things call for the
+## end now -- the quit key, and either side of the dish dying out -- and the
+## census in particular would otherwise ask for it again every frame.
 func game_over() -> void:
+	if _over:
+		return
+	_over = true
 	game_timer.stop()
 
 	# Freeze the dish behind the end screen. Pausing the tree stops every cell,
@@ -339,6 +366,45 @@ func _process(delta: float) -> void:
 		if _time_until_spawn[i] <= 0.0:
 			_time_until_spawn[i] = colony.spawn_interval
 			_spawn_cell(i)
+
+	# Last, so this frame's arrivals are counted before the dish is judged on
+	# them -- a colony re-seeding on the very frame the last of it was eaten
+	# should not read as a side that has died out.
+	_check_ecosystem_collapse()
+
+## Ends the run the instant the dish stops being an ecosystem: one side eaten out
+## or died off, leaving only predators or only prey. An empty dish is neither of
+## those -- nothing is "left" in it at all -- and the drip feeds will refill it,
+## so that one is allowed to run on.
+func _check_ecosystem_collapse() -> void:
+	var census: Vector2i = _census()
+	if census.x == 0 and census.y == 0:
+		return
+	if census.x == 0 or census.y == 0:
+		game_over()
+
+## The dish's census: predators in x, prey in y, counting only what is genuinely
+## still swimming.
+##
+## The eaten are skipped by hand, and that is the load-bearing part. queue_free()
+## does not take a node out of its groups until the end of the frame, so the cell
+## a predator claimed this frame is still listed -- and it is exactly the frame
+## the last one goes that this exists to catch, so counting it would hide the
+## very instant being watched for.
+##
+## A predator is never counted as prey, even were some future species tagged as
+## both. is_edible() takes the same care for the same reason: one cell answering
+## on both sides could hold a collapsed dish open on its own.
+func _census() -> Vector2i:
+	var predators: int = 0
+	var prey: int = 0
+	for node in get_tree().get_nodes_in_group(Cell.PREDATOR_GROUP):
+		if not node.is_queued_for_deletion():
+			predators += 1
+	for node in get_tree().get_nodes_in_group(Cell.FLOATER_GROUP):
+		if not node.is_queued_for_deletion() and not node.is_in_group(Cell.PREDATOR_GROUP):
+			prey += 1
+	return Vector2i(predators, prey)
 
 ## How fast this colony is breeding, as a multiple of its own spawn_interval.
 ## Asked of the cells rather than of the colony resource because the answer can

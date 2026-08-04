@@ -36,6 +36,38 @@ corner_radius_bottom_left = 28
 
 [sub_resource type="StyleBoxEmpty" id="StyleBox_retry_focus"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBox_menu_normal"]
+content_margin_left = 44.0
+content_margin_top = 12.0
+content_margin_right = 44.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.15, 0.19, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.55, 0.61, 0.55)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_menu_hover"]
+content_margin_left = 44.0
+content_margin_top = 12.0
+content_margin_right = 44.0
+content_margin_bottom = 12.0
+bg_color = Color(0.2, 0.21, 0.26, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.87, 0.62, 0.68, 0.8)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
 [node name="GameOverScreen" type="Control" unique_id=2093173003]
 layout_mode = 3
 anchors_preset = 15
@@ -100,7 +132,13 @@ custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RetryButton" type="Button" parent="Center/VBox" unique_id=915340722]
+[node name="Buttons" type="HBoxContainer" parent="Center/VBox" unique_id=1180334927]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="RetryButton" type="Button" parent="Center/VBox/Buttons" unique_id=915340722]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 0.95)
@@ -113,6 +151,20 @@ theme_override_styles/pressed = SubResource("StyleBox_retry_normal")
 theme_override_styles/hover = SubResource("StyleBox_retry_hover")
 theme_override_styles/focus = SubResource("StyleBox_retry_focus")
 text = "retry"
+
+[node name="MenuButton" type="Button" parent="Center/VBox/Buttons" unique_id=312820856]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 0.7)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 0.95)
+theme_override_fonts/font = ExtResource("6_reg")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBox_menu_normal")
+theme_override_styles/pressed = SubResource("StyleBox_menu_normal")
+theme_override_styles/hover = SubResource("StyleBox_menu_hover")
+theme_override_styles/focus = SubResource("StyleBox_retry_focus")
+text = "back to menu"
 
 [node name="TopLeft" type="Label" parent="." unique_id=1412451937]
 modulate = Color(1, 1, 1, 0.55)

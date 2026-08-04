@@ -1,7 +1,10 @@
 extends Control
 
+const MENU_PATH := "res://ui/main_menu/main_menu.tscn"
+
 @onready var time_label: Label = $Center/VBox/TimeLabel
-@onready var restart_button: Button = $Center/VBox/RetryButton
+@onready var restart_button: Button = $Center/VBox/Buttons/RetryButton
+@onready var menu_button: Button = $Center/VBox/Buttons/MenuButton
 
 
 func _ready() -> void:
@@ -10,6 +13,7 @@ func _ready() -> void:
 	# the click that would lift the pause.
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	restart_button.pressed.connect(_on_restart_pressed)
+	menu_button.pressed.connect(_on_menu_pressed)
 	hide()
 
 
@@ -27,6 +31,14 @@ func _on_restart_pressed() -> void:
 	# and one that comes back already frozen never runs a single frame.
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+
+## Back out to the title. Unpauses for the same reason retry does -- the flag
+## lives on the tree rather than on the scene, so the menu would otherwise load
+## into a frozen tree and sit there with its drifting cells stopped dead.
+func _on_menu_pressed() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file(MENU_PATH)
 
 
 ## MM:SS:CC (minutes : seconds : hundredths), the readout the end screen shows.
