@@ -91,10 +91,13 @@ func _physics_process(delta: float) -> void:
 func _clamped_to_roam(point: Vector2) -> Vector2:
 	if roam_radius <= 0.0:
 		return point
-	var offset: Vector2 = point - roam_center
-	if offset.length() <= roam_radius:
+	# Same squash-the-space trick Cell's containment uses, so this follows the
+	# oval glass rather than a circle inscribed in it.
+	var reach: Vector2 = roam_reach()
+	var normalized: Vector2 = (point - roam_center) / reach
+	if normalized.length() <= 1.0:
 		return point
-	return roam_center + offset.normalized() * roam_radius
+	return roam_center + normalized.normalized() * reach
 
 ## Eat everything currently inside us. There is no sensor and no physics contact
 ## to work from -- the mouser passes clean through the dish -- so this walks the

@@ -103,11 +103,11 @@ func _clamped_to_dish(point: Vector2) -> Vector2:
 	if dish == null:
 		return point
 	var centre: Vector2 = dish.global_position
-	var offset: Vector2 = point - centre
-	var limit: float = dish.leash_radius()
-	if offset.length() <= limit:
+	var limit: Vector2 = dish.leash_radii()
+	var normalized: Vector2 = (point - centre) / limit
+	if normalized.length() <= 1.0:
 		return point
-	return centre + offset.normalized() * limit
+	return centre + normalized.normalized() * limit
 
 func _process(delta: float) -> void:
 	_nutrient_ready_in = maxf(_nutrient_ready_in - delta, 0.0)
@@ -157,11 +157,16 @@ func _spawn_cell(index: int) -> void:
 	# Spawning somewhere is not the same as belonging there: by default a cell is
 	# free to cross the whole dish, and only stays put if the colony asks for it.
 	if colony.roam_radius <= 0.0 and dish != null:
+		var leash: Vector2 = dish.leash_radii()
 		cell.roam_center = dish.global_position
-		cell.roam_radius = dish.leash_radius()
+		cell.roam_radius = leash.x
+		cell.roam_scale = Vector2(1.0, leash.y / maxf(leash.x, 0.001))
 	else:
+		# A colony that asked for its own patch gets a round one; only the dish
+		# itself is an oval.
 		cell.roam_center = colony.spawn_center
 		cell.roam_radius = _leash_for(colony)
+		cell.roam_scale = Vector2.ONE
 
 	if not colony.textures.is_empty():
 		# @onready has not run yet, so reach for the node directly.
@@ -176,15 +181,17 @@ func _spawn_cell(index: int) -> void:
 ## can be placed out through the glass.
 func _spawn_position(colony: CellColony) -> Vector2:
 	if colony.spawn_anywhere and dish != null:
-		return dish.global_position + _random_in_disc(dish.leash_radius())
-	return _clamped_to_dish(colony.spawn_center + _random_in_disc(colony.spawn_radius))
+		return dish.global_position + _random_in_oval(dish.leash_radii())
+	return _clamped_to_dish(
+		colony.spawn_center + _random_in_oval(Vector2.ONE * colony.spawn_radius))
 
-## Uniformly distributed point inside a circle of this radius. The square root is
+## Uniformly distributed point inside an oval of these radii. The square root is
 ## what makes it even by area -- sampling the radius directly bunches cells up
 ## around the centre, and a plain x/y box (which this replaces) scatters them
-## into corners the round dish does not have.
-func _random_in_disc(radius: float) -> Vector2:
-	return Vector2.RIGHT.rotated(randf() * TAU) * sqrt(randf()) * radius
+## into corners the dish does not have. Scaling an even disc by the radii keeps
+## it even once it is stretched.
+func _random_in_oval(of_radii: Vector2) -> Vector2:
+	return Vector2.RIGHT.rotated(randf() * TAU) * sqrt(randf()) * of_radii
 
 ## A colony that wants its own patch gets one, shrunk so the patch still fits
 ## inside the glass from wherever it happens to be centred.
@@ -192,8 +199,14 @@ func _leash_for(colony: CellColony) -> float:
 	if dish == null:
 		return colony.roam_radius
 
-	var offset: float = colony.spawn_center.distance_to(dish.global_position)
-	var room: float = dish.leash_radius() - offset
+	# How far out the colony sits as a fraction of the oval, then how much of the
+	# short axis is left beyond that. Direction-aware, because a patch out along
+	# the wide axis has far more room than the same offset up the narrow one --
+	# and still conservative, since a round patch has to fit whichever way the
+	# oval is tightest.
+	var leash: Vector2 = dish.leash_radii()
+	var out: float = ((colony.spawn_center - dish.global_position) / leash).length()
+	var room: float = (1.0 - out) * minf(leash.x, leash.y)
 	if room <= 0.0:
 		push_warning("Colony centred at %s sits outside the dish." % colony.spawn_center)
 		return 0.0
@@ -205,7 +218,8 @@ func _fit_camera_to_dish() -> void:
 	# Limits smaller than the viewport lock the camera dead centre, so a dish
 	# that fits on screen simply stops panning.
 	var centre: Vector2 = dish.global_position
-	camera.limit_left = int(centre.x - dish.radius)
-	camera.limit_right = int(centre.x + dish.radius)
-	camera.limit_top = int(centre.y - dish.radius)
-	camera.limit_bottom = int(centre.y + dish.radius)
+	var extent: Vector2 = dish.radii()
+	camera.limit_left = int(centre.x - extent.x)
+	camera.limit_right = int(centre.x + extent.x)
+	camera.limit_top = int(centre.y - extent.y)
+	camera.limit_bottom = int(centre.y + extent.y)
