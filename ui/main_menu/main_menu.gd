@@ -12,6 +12,14 @@ const LEVEL_PATH := "res://scenes/level_01/level_01.tscn"
 var _starting: bool = false
 
 
+func _ready() -> void:
+	# Idempotent, so booting straight into the menu (where the autoload has the
+	# track going already) leaves it alone. It matters coming back the other way:
+	# a run ending stops the music, and without this the menu it returns to would
+	# sit in silence.
+	Audio.play_music()
+
+
 ## Anywhere on the screen and any button or key, rather than a target to hit --
 ## the whole menu is the button. _unhandled_input rather than _gui_input because
 ## nothing here takes the mouse (every node is set to let it through), so clicks

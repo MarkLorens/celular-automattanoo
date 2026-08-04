@@ -54,6 +54,7 @@
 [ext_resource type="Texture2D" uid="uid://dxi6fc87l7o3n" path="res://assets/cells n stuff/edger/IMG_2285.png" id="e4"]
 [ext_resource type="Texture2D" uid="uid://82sj3edikicd" path="res://assets/cells n stuff/edger/IMG_2286.png" id="e5"]
 [ext_resource type="Texture2D" uid="uid://cxp63f6hpjkcu" path="res://assets/cells n stuff/edger/IMG_2287.png" id="e6"]
+[ext_resource type="Script" path="res://scenes/level_01/pause_key.gd" id="48_pause"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
@@ -93,7 +94,7 @@ metadata/_custom_type_script = "uid://blj5aorppmxvy"
 [sub_resource type="Resource" id="Resource_dfdfd"]
 script = ExtResource("2_colony")
 scene = ExtResource("8_7asd0")
-count = 1
+count = 0
 spawn_interval = 40.0
 first_spawn_delay = 40.0
 max_population = 1
@@ -103,7 +104,7 @@ metadata/_custom_type_script = "uid://blj5aorppmxvy"
 [sub_resource type="Resource" id="Resource_edgers"]
 script = ExtResource("2_colony")
 scene = ExtResource("47_edger")
-count = 2
+count = 0
 spawn_interval = 30.0
 first_spawn_delay = 80.0
 textures = Array[Texture2D]([ExtResource("e0"), ExtResource("e1"), ExtResource("e2"), ExtResource("e3"), ExtResource("e4"), ExtResource("e5"), ExtResource("e6")])
@@ -130,6 +131,9 @@ zoom = Vector2(0.4, 0.4)
 script = ExtResource("8_n2h5k")
 
 [node name="TemperatureAmbience" parent="." unique_id=1964625284 instance=ExtResource("46_amb")]
+
+[node name="PauseKey" type="Node" parent="."]
+script = ExtResource("48_pause")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=744026996]
 
