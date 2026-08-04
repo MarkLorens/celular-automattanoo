@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dhn4l5r1hc7vm" path="res://entities/nutrient/nutrient.gd" id="1_e8x1k"]
 [ext_resource type="Texture2D" uid="uid://b2tk82pjaa6fy" path="res://assets/temporary_assets/Player_Resized.png" id="1_poy5k"]
+[ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="24_shadow"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e8x1k"]
 size = Vector2(42, 110)
@@ -18,3 +19,5 @@ texture = ExtResource("1_poy5k")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=470680671]
 position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_e8x1k")
+
+[node name="Shadow" parent="." instance=ExtResource("24_shadow")]
