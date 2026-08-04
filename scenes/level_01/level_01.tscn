@@ -3,30 +3,57 @@
 [ext_resource type="Script" uid="uid://bljldeqnbu6rl" path="res://scenes/level_01/level_01.gd" id="1_0y5gt"]
 [ext_resource type="Script" uid="uid://blj5aorppmxvy" path="res://entities/cell/cell_colony.gd" id="2_colony"]
 [ext_resource type="PackedScene" uid="uid://lmsuwdasp2pu" path="res://entities/cell/flocker/flocker.tscn" id="3_flocker"]
+[ext_resource type="Texture2D" uid="uid://dsdgeel5wkbsk" path="res://assets/cells n stuff/Untitled_Artwork-1 2.png" id="4_q5bgy"]
 [ext_resource type="PackedScene" uid="uid://crlxvxqo1cc5e" path="res://entities/cell/ringer/ringer.tscn" id="4_ringer"]
-[ext_resource type="Texture2D" uid="uid://5352y1wr46g0" path="res://assets/temporary_assets/armadillo_ability_1.PNG" id="5_a03qe"]
-[ext_resource type="Texture2D" uid="uid://74hys64mqckk" path="res://assets/temporary_assets/fira_walking_2.PNG" id="6_i3sbr"]
+[ext_resource type="Texture2D" uid="uid://glt6wvcsc7ta" path="res://assets/cells n stuff/Untitled_Artwork-2 2.png" id="5_x6vc4"]
+[ext_resource type="Texture2D" uid="uid://bopcgtathx4lf" path="res://assets/cells n stuff/Untitled_Artwork-3 2.png" id="6_qvrgn"]
+[ext_resource type="Texture2D" uid="uid://d3i2hk7qscg6t" path="res://assets/cells n stuff/Untitled_Artwork-4 2.png" id="7_xylgr"]
 [ext_resource type="PackedScene" uid="uid://danprjrpnqplt" path="res://entities/cell/mouser/mouser.tscn" id="8_7asd0"]
+[ext_resource type="Texture2D" uid="uid://1c5a6l46coy4" path="res://assets/cells n stuff/Untitled_Artwork-5 2.png" id="8_c0uhq"]
 [ext_resource type="Script" uid="uid://cgajsibqedijg" path="res://helper_scripts/camera.gd" id="8_n2h5k"]
 [ext_resource type="PackedScene" uid="uid://dga5bwfx8x0" path="res://entities/cell/chaser/chaser.tscn" id="8_xttg2"]
+[ext_resource type="Texture2D" uid="uid://bjcw3ntqwttw" path="res://assets/cells n stuff/Untitled_Artwork-6 2.png" id="9_6jyg7"]
 [ext_resource type="PackedScene" uid="uid://cuexd1ww4bsar" path="res://entities/dish/petri_dish.tscn" id="9_dish"]
+[ext_resource type="Texture2D" uid="uid://b7fg0h4y7tlhy" path="res://assets/cells n stuff/Untitled_Artwork-7 2.png" id="10_liqrg"]
 [ext_resource type="PackedScene" uid="uid://depdw7v8tqpoj" path="res://entities/nutrient/nutrient.tscn" id="10_nutri"]
+[ext_resource type="Texture2D" uid="uid://dnc72k5jvccld" path="res://assets/cells n stuff/Untitled_Artwork-8 2.png" id="11_oao38"]
+[ext_resource type="Texture2D" uid="uid://87vtoslkb5sf" path="res://assets/cells n stuff/Untitled_Artwork-9.png" id="12_vxkgf"]
+[ext_resource type="Texture2D" uid="uid://cumsnisqkw18f" path="res://assets/cells n stuff/Untitled_Artwork-10.png" id="13_b60cw"]
+[ext_resource type="Texture2D" uid="uid://cpyif0v6t2n33" path="res://assets/cells n stuff/Untitled_Artwork-1 4.png" id="15_5j87c"]
+[ext_resource type="Texture2D" uid="uid://bu3u7xpewg3w" path="res://assets/cells n stuff/Untitled_Artwork-2 4.png" id="16_ebkcc"]
+[ext_resource type="Texture2D" uid="uid://cbck4b4in2xfx" path="res://assets/cells n stuff/Untitled_Artwork-3 4.png" id="17_xxgnw"]
+[ext_resource type="Texture2D" uid="uid://cbwvy2ijj6pwr" path="res://assets/cells n stuff/Untitled_Artwork-4 4.png" id="18_dlf0c"]
+[ext_resource type="Texture2D" uid="uid://diwe1bheuxg2l" path="res://assets/cells n stuff/Untitled_Artwork-5 4.png" id="19_2lgdn"]
+[ext_resource type="Texture2D" uid="uid://7rua78a44nmf" path="res://assets/cells n stuff/Untitled_Artwork-6 4.png" id="20_b7nam"]
+[ext_resource type="Texture2D" uid="uid://c7juyr8ap6hy7" path="res://assets/cells n stuff/Untitled_Artwork-7 4.png" id="21_2xhf7"]
+[ext_resource type="Texture2D" uid="uid://ncq1tncpoyjn" path="res://assets/cells n stuff/Untitled_Artwork-8 4.png" id="22_ve8qq"]
+[ext_resource type="Texture2D" uid="uid://xwk0rxjnvelm" path="res://assets/cells n stuff/Untitled_Artwork-9 3.png" id="23_fmtwj"]
+[ext_resource type="Texture2D" uid="uid://civvqcfk0cimb" path="res://assets/cells n stuff/Untitled_Artwork-10 3.png" id="24_4lp0r"]
+[ext_resource type="Texture2D" uid="uid://c5o6175y4feos" path="res://assets/cells n stuff/IMG_2288.png" id="26_nd6wt"]
+[ext_resource type="Texture2D" uid="uid://drk84u0vx26gy" path="res://assets/cells n stuff/IMG_2289.png" id="27_hr81f"]
+[ext_resource type="Texture2D" uid="uid://qh4d5r5s63jr" path="res://assets/cells n stuff/IMG_2290.png" id="28_t5k3s"]
+[ext_resource type="Texture2D" uid="uid://bd1xof13quayy" path="res://assets/cells n stuff/IMG_2291.png" id="29_2dj8j"]
+[ext_resource type="Texture2D" uid="uid://px6ytqhcft2v" path="res://assets/cells n stuff/IMG_2292.png" id="30_11gfn"]
 [ext_resource type="PackedScene" path="res://ui/arc_meter/arc_meter.tscn" id="30_hud"]
+[ext_resource type="Texture2D" uid="uid://5tamuu2jpf1r" path="res://assets/cells n stuff/IMG_2293.png" id="31_cvnlr"]
+[ext_resource type="Texture2D" uid="uid://dosc8fh0uo6v3" path="res://assets/cells n stuff/IMG_2294.png" id="32_hy55k"]
 
 [sub_resource type="Resource" id="Resource_flockers"]
 script = ExtResource("2_colony")
 scene = ExtResource("3_flocker")
 count = 10
 spawn_interval = 20.0
-textures = Array[Texture2D]([ExtResource("5_a03qe"), ExtResource("6_i3sbr")])
+textures = Array[Texture2D]([ExtResource("4_q5bgy"), ExtResource("5_x6vc4"), ExtResource("6_qvrgn"), ExtResource("7_xylgr"), ExtResource("8_c0uhq"), ExtResource("9_6jyg7"), ExtResource("10_liqrg"), ExtResource("11_oao38"), ExtResource("12_vxkgf"), ExtResource("13_b60cw")])
 spawn_center = Vector2(-1400, 0)
 spawn_radius = 500.0
+roam_radius = 1200.0
 
 [sub_resource type="Resource" id="Resource_5nkp2"]
 script = ExtResource("2_colony")
 scene = ExtResource("4_ringer")
 count = 10
 spawn_interval = 10.0
+textures = Array[Texture2D]([ExtResource("15_5j87c"), ExtResource("16_ebkcc"), ExtResource("17_xxgnw"), ExtResource("18_dlf0c"), ExtResource("19_2lgdn"), ExtResource("20_b7nam"), ExtResource("21_2xhf7"), ExtResource("22_ve8qq"), ExtResource("23_fmtwj"), ExtResource("24_4lp0r")])
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
 [sub_resource type="Resource" id="Resource_7asd0"]
@@ -34,7 +61,9 @@ script = ExtResource("2_colony")
 scene = ExtResource("8_xttg2")
 count = 2
 spawn_interval = 30.0
+textures = Array[Texture2D]([ExtResource("26_nd6wt"), ExtResource("27_hr81f"), ExtResource("28_t5k3s"), ExtResource("29_2dj8j"), ExtResource("30_11gfn"), ExtResource("31_cvnlr"), ExtResource("32_hy55k")])
 spawn_center = Vector2(0, 500)
+roam_radius = 1200.0
 metadata/_custom_type_script = "uid://blj5aorppmxvy"
 
 [sub_resource type="Resource" id="Resource_dfdfd"]
@@ -54,14 +83,12 @@ camera = NodePath("Camera2D")
 nutrient_scene = ExtResource("10_nutri")
 
 [node name="PetriDish" parent="." unique_id=1775356281 instance=ExtResource("9_dish")]
-radius = 1700.0
-vertical_ratio = 0.73
 rim_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=371371534]
 zoom = Vector2(0.4, 0.4)
 script = ExtResource("8_n2h5k")
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=744026996]
 
-[node name="TemperatureGauge" parent="HUD" instance=ExtResource("30_hud")]
+[node name="TemperatureGauge" parent="HUD" unique_id=290152689 instance=ExtResource("30_hud")]

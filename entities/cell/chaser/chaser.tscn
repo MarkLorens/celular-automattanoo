@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dga5bwfx8x0"]
 
 [ext_resource type="Script" uid="uid://ykx3wqfx2epc" path="res://entities/cell/chaser/chaser.gd" id="1_gshbv"]
-[ext_resource type="Texture2D" uid="uid://0tbt6las8jst" path="res://assets/temporary_assets/rhino_walking_1.PNG" id="1_h4drc"]
+[ext_resource type="Texture2D" uid="uid://c5o6175y4feos" path="res://assets/cells n stuff/IMG_2288.png" id="2_rmndm"]
 [ext_resource type="PackedScene" path="res://entities/shadow/shadow.tscn" id="22_shadow"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rmndm"]
@@ -20,8 +20,7 @@ min_speed = 20.0
 max_speed = 40.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1401065615]
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("1_h4drc")
+texture = ExtResource("2_rmndm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1406061963]
 shape = SubResource("CircleShape2D_rmndm")
@@ -34,4 +33,4 @@ collision_mask = 3
 shape = SubResource("CircleShape2D_fey80")
 debug_color = Color(0.8467286, 0, 0.1221027, 0.41960785)
 
-[node name="Shadow" parent="." instance=ExtResource("22_shadow")]
+[node name="Shadow" parent="." unique_id=199278591 instance=ExtResource("22_shadow")]
