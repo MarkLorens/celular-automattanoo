@@ -123,7 +123,6 @@ func _update_hunt(delta: float) -> void:
 		_hunt_remaining = hunt_duration
 
 func _end_hunt() -> void:
-	print("stopping hunt...")
 	prey = null
 	_hunt_remaining = 0.0
 	_cooldown_remaining = hunt_cooldown
