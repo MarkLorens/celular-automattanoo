@@ -3,3 +3,6 @@
 /android/
 
 .DS_Store
+
+# Contains signing identities, Apple Team ID, and bundle identifiers
+export_presets.cfg
